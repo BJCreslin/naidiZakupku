@@ -1,7 +1,7 @@
 package ru.bjcreslin.naidizakupku.user.entity
 
 import jakarta.persistence.*
-import ru.bjcreslin.naidizakupku.common.BaseEntity
+import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 import ru.bjcreslin.naidizakupku.security.entity.Role
 
 @Entity

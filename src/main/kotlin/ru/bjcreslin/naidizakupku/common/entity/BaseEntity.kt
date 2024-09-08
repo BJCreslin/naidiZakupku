@@ -1,7 +1,8 @@
-package ru.bjcreslin.naidizakupku.common
+package ru.bjcreslin.naidizakupku.common.entity
 
 import jakarta.persistence.*
 import org.springframework.data.jpa.domain.support.AuditingEntityListener
+import ru.bjcreslin.naidizakupku.common.SecurityUtils
 import java.time.LocalDateTime
 
 @MappedSuperclass
