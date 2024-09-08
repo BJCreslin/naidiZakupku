@@ -2,7 +2,7 @@ package ru.bjcreslin.naidizakupku.cfg
 
 import org.springframework.context.annotation.Configuration
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import ru.bjcreslin.naidizakupku.security.service.UserService
+import ru.bjcreslin.naidizakupku.user.serivice.UserService
 
 @Configuration
 @EnableWebSecurity

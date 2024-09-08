@@ -1,10 +1,10 @@
-package ru.bjcreslin.naidizakupku.security.service.impl
+package ru.bjcreslin.naidizakupku.user.serivice.impl
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.security.repository.UserRepository
 import ru.bjcreslin.naidizakupku.security.service.RoleService
-import ru.bjcreslin.naidizakupku.security.service.UserService
+import ru.bjcreslin.naidizakupku.user.serivice.UserService
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 @Service

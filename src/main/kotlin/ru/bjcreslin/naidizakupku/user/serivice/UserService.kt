@@ -1,4 +1,4 @@
-package ru.bjcreslin.naidizakupku.security.service
+package ru.bjcreslin.naidizakupku.user.serivice
 
 import org.springframework.transaction.annotation.Transactional
 import ru.bjcreslin.naidizakupku.user.entity.User
