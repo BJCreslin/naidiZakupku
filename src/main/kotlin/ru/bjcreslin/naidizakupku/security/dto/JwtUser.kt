@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import ru.bjcreslin.naidizakupku.security.entity.User
+import ru.bjcreslin.naidizakupku.user.entity.User
 
 class JwtUser(
     val id: Long,

@@ -2,10 +2,9 @@ package ru.bjcreslin.naidizakupku.security.repository
 
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
-import ru.bjcreslin.naidizakupku.user.entity.User
+import ru.bjcreslin.naidizakupku.security.entity.Role
 
 @Repository
-interface UserRepository : JpaRepository<User, Long> {
+interface RoleRepository: JpaRepository<Role, Long> {
 
-    fun findByUsername(username: String): User?
 }

@@ -1,4 +1,15 @@
-package ru.bjcreslin.naidizakupku.security.entity;
+package ru.bjcreslin.naidizakupku.security.entity
 
-public class Role extends JpaB{
-}
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.Table
+import ru.bjcreslin.naidizakupku.common.BaseEntity
+
+@Entity
+@Table(name = "user_roles")
+public data class Role(
+
+    @Column(name = "name", unique = true, nullable = false)
+    val name: String,
+
+) : BaseEntity()

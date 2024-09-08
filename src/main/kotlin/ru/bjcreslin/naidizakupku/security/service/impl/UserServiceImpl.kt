@@ -2,16 +2,19 @@ package ru.bjcreslin.naidizakupku.security.service.impl
 
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
-import ru.bjcreslin.naidizakupku.security.entity.User
 import ru.bjcreslin.naidizakupku.security.repository.UserRepository
+import ru.bjcreslin.naidizakupku.security.service.RoleService
 import ru.bjcreslin.naidizakupku.security.service.UserService
+import ru.bjcreslin.naidizakupku.user.entity.User
 
 @Service
-class UserServiceImpl(val userRepository: UserRepository) : UserService {
+class UserServiceImpl(val userRepository: UserRepository, val roleService: RoleService) : UserService {
+
     override fun saveUser(user: User): User {
         val encoder = BCryptPasswordEncoder()
         val encodedPassword = encoder.encode(user.password)
-        return userRepository.save(user.copy(password = encodedPassword))
+        val role = roleService.getDefaultRole()
+        return userRepository.save(user.copy(password = encodedPassword, roles = listOf(role)))
     }
 
     override fun findByUsername(username: String): User? {

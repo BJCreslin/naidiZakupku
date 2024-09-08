@@ -1,11 +1,12 @@
-package ru.bjcreslin.naidizakupku.security.entity
+package ru.bjcreslin.naidizakupku.user.entity
 
 import jakarta.persistence.*
 import ru.bjcreslin.naidizakupku.common.BaseEntity
+import ru.bjcreslin.naidizakupku.security.entity.Role
 
 @Entity
 @Table(name = "users")
-class User: BaseEntity (
+public data class User(
     @Column(name = "username", unique = true, nullable = false)
     val username: String,
 
@@ -17,5 +18,5 @@ class User: BaseEntity (
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "role_id")]
     )
-    private var roles: Set<Role?>? = HashSet()
-)
+    val roles: List<Role>
+): BaseEntity()
