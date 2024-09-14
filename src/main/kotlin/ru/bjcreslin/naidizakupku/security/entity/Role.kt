@@ -7,9 +7,7 @@ import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 
 @Entity
 @Table(name = "user_roles")
-public data class Role(
-
+data class Role(
     @Column(name = "name", unique = true, nullable = false)
     val name: String,
-
-) : BaseEntity()
+    ) : BaseEntity()

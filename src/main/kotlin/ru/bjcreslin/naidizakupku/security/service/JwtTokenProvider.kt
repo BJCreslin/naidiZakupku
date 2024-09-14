@@ -1,7 +1,10 @@
 package ru.bjcreslin.naidizakupku.security.service
 
+import io.jsonwebtoken.ExpiredJwtException
+import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
+import jakarta.servlet.http.HttpServletRequest
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -10,16 +13,20 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
 import ru.bjcreslin.naidizakupku.cfg.JwtProperties
+import ru.bjcreslin.naidizakupku.security.exceptions.InvalidTokenException
+import ru.bjcreslin.naidizakupku.security.exceptions.UnauthorizedException
 import java.nio.charset.StandardCharsets
-import java.security.Key
 import java.util.*
+import javax.crypto.SecretKey
 
 @Component
-class JwtTokenProvider(private val jwtProperties: JwtProperties,
-                       private val userDetailsService: UserDetailsService) {
+class JwtTokenProvider(
+    private val jwtProperties: JwtProperties,
+    private val userDetailsService: UserDetailsService
+) {
 
     val rolesClaims: String = "role"
-    private lateinit var codeSecret: Key
+    private lateinit var codeSecret: SecretKey
 
     @EventListener(ApplicationReadyEvent::class)
     fun init() {
@@ -46,5 +53,39 @@ class JwtTokenProvider(private val jwtProperties: JwtProperties,
     fun getAuthentication(token: String?): Authentication {
         val userDetails: UserDetails = userDetailsService.loadUserByUsername(getUsername(token))
         return UsernamePasswordAuthenticationToken(userDetails, "", userDetails.authorities)
+    }
+
+    fun getUsername(token: String?): String {
+        return Jwts.parser()
+            .decryptWith(codeSecret).build()
+            .parseSignedClaims(token)
+            .payload
+            .subject;
+    }
+
+    fun resolveToken(req: HttpServletRequest): String? {
+        val bearerToken = req.getHeader(jwtProperties.header)
+        if (bearerToken != null && bearerToken.startsWith(jwtProperties.bearerPrefix)) {
+            return bearerToken.substring(jwtProperties.bearerPrefix.length)
+        }
+        return null
+    }
+
+    fun validateToken(token: String?): Boolean {
+        if (token == null) {
+            throw InvalidTokenException("Token is null")
+        }
+        try {
+            val claims = Jwts.parser()
+                .decryptWith(codeSecret).build()
+                .parseSignedClaims(token)
+            return !claims.payload.expiration.before(Date())
+        } catch (ex: ExpiredJwtException) {
+            throw InvalidTokenException("Token expired")
+        } catch (ex: JwtException) {
+            throw InvalidTokenException("Invalid token")
+        } catch (ex: Exception) {
+            throw UnauthorizedException("Unauthorized")
+        }
     }
 }
