@@ -1,41 +1,25 @@
 package ru.bjcreslin.naidizakupku.security.dto
 
 import com.fasterxml.jackson.annotation.JsonIgnore
-import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 class JwtUser(
-    val id: Long,
-    val username: String,
+    private val id: Long,
+    private val username: String,
     @JsonIgnore
-    val password: String,
-    val telegramUserId: Long,
-    val enabled: Boolean,
-    val authorities: MutableCollection<out GrantedAuthority>
+    private val password: String?,
+    private val telegramUserId: Long?,
+    private val enabled: Boolean,
+    private val authorities: MutableList<SimpleGrantedAuthority>?
 ) : UserDetails {
 
-    fun build(user: User): UserDetails {
-        val authorities: Unit = user.getRoles().stream()
-            .map { role -> SimpleGrantedAuthority(role.getName()) }
-            .toList()
-        return JwtUser(
-            user.getId(),
-            user.getUsername(),
-            user.getEmail(),
-            user.getTelegramUserId(),
-            user.getPassword(),
-            user.isEnabled(),
-            authorities
-        )
-    }
-
-    override fun getAuthorities(): MutableCollection<out GrantedAuthority> {
+    override fun getAuthorities(): MutableList<SimpleGrantedAuthority>? {
         return authorities
     }
 
-    override fun getPassword(): String {
+    override fun getPassword(): String? {
         return password
     }
 

@@ -9,7 +9,8 @@ import org.springframework.web.filter.OncePerRequestFilter
 import java.lang.String
 
 @Component
-class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider): OncePerRequestFilter {
+class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFilter() {
+    val LOGGING_WITH_TOKEN_NAME_S: kotlin.String = "Logging with token name: %s"
 
     override fun doFilterInternal(
         request: HttpServletRequest,
@@ -18,23 +19,25 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider): OncePerRequestFilt
     ) {
         val token = jwtTokenProvider.resolveToken(request)
         try {
-            if (token != null && (jwtTokenProvider.validateToken(token))) {
-                val auth = jwtTokenProvider.getAuthentication(token)
-                if (auth != null) {
-                    SecurityContextHolder.getContext().authentication = auth
-                    if (logger.isDebugEnabled) {
-                        logger.debug(
-                            String.format(
-                                JwtTokenFilter.LOGGING_WITH_TOKEN_NAME_S,
-                                jwtTokenProvider.getUsername(token)
+            token?.let {
+                if (jwtTokenProvider.validateToken(token)) {
+                    val auth = jwtTokenProvider.getAuthentication(token)
+                    auth?.let {
+                        SecurityContextHolder.getContext().authentication = auth
+                        if (logger.isDebugEnabled) {
+                            logger.debug(
+                                String.format(
+                                    LOGGING_WITH_TOKEN_NAME_S,
+                                    jwtTokenProvider.getUsername(token)
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
-        } catch (e: JwtAuthenticationException) {
+        } catch (e: Exception) {
             SecurityContextHolder.clearContext()
-            throw JwtAuthenticationException(JwtAuthenticationException.JWT_IS_INVALID)
+            throw e
         }
         filterChain.doFilter(request, response)
     }

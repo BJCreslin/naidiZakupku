@@ -5,8 +5,27 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
-
-    <changeSet id="1726376782590-1" author="Владимир (generated)">
+    <changeSet id="1726581376435-1" author="Владимир">
+        <createTable tableName="telegram_users">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_telegram_users"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="VARCHAR(255)"/>
+            <column name="comment" type="VARCHAR(255)"/>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="telegram_id" type="BIGINT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1726581376435-2" author="Владимир">
         <createTable tableName="user_roles">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_roles"/>
@@ -25,7 +44,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="1726376782590-2" author="Владимир (generated)">
+    <changeSet id="1726581376435-3" author="Владимир">
         <createTable tableName="users">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_users"/>
@@ -43,13 +62,24 @@
                 <constraints nullable="false"/>
             </column>
             <column name="password" type="VARCHAR(255)"/>
+            <column name="enabled" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
         </createTable>
     </changeSet>
-    <changeSet id="1726376782590-3" author="Владимир (generated)">
+    <changeSet id="1726581376435-4" author="Владимир">
+        <addUniqueConstraint columnNames="user_id" constraintName="uc_telegram_users_user" tableName="telegram_users"/>
+    </changeSet>
+    <changeSet id="1726581376435-5" author="Владимир">
         <addUniqueConstraint columnNames="name" constraintName="uc_user_roles_name" tableName="user_roles"/>
     </changeSet>
-    <changeSet id="1726376782590-4" author="Владимир (generated)">
+    <changeSet id="1726581376435-6" author="Владимир">
         <addUniqueConstraint columnNames="username" constraintName="uc_users_username" tableName="users"/>
+    </changeSet>
+    <changeSet id="1726581376435-7" author="Владимир">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="telegram_users"
+                                 constraintName="FK_TELEGRAM_USERS_ON_USER" referencedColumnNames="id"
+                                 referencedTableName="users"/>
     </changeSet>
 
 </databaseChangeLog>
