@@ -38,13 +38,12 @@ class JwtTokenProvider(
     }
 
     fun createAccessToken(userName: String, roles: List<String>): String {
-        val claims = Jwts.claims().subject(userName).build()
-        claims[rolesClaims] = roles
         val currentDate = Date()
         return Jwts.builder().claims()
             .subject(userName)
             .expiration(getExpirationDate(currentDate))
             .issuedAt(currentDate)
+            .add("role", roles)
             .and()
             .signWith(codeSecret)
             .compact()

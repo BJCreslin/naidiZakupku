@@ -42,7 +42,7 @@ class SecurityConfig(
                     .hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
-                    .requestMatchers("/login/**").permitAll()
+                    .requestMatchers("/api/chromeExtension/v1/login**").permitAll()
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())
