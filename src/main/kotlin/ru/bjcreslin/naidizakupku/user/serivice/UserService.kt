@@ -9,7 +9,7 @@ interface UserService {
      * Сохранение пользователя
      */
     @Transactional
-    fun saveUser(user: User): User
+    fun saveNewDeafultUser(user: User): User
 
     /**
      * Поиск пользователя по имени

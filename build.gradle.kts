@@ -28,6 +28,7 @@ repositories {
 extra["springModulithVersion"] = "1.2.1"
 
 val jsonwebtoken = "0.12.3"
+val telegrambots = "6.9.7.1"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -43,17 +44,21 @@ dependencies {
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.liquibase:liquibase-core")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    implementation("org.liquibase:liquibase-core")
     runtimeOnly("org.postgresql:postgresql")
     compileOnly("org.jetbrains.kotlin:kotlin-noarg")
     compileOnly("org.jetbrains.kotlin:kotlin-allopen")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+
 }
 
 dependencyManagement {

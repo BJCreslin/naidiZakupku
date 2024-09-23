@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component
  */
 @ConfigurationProperties(prefix = "users")
 @Component
-data class UsersProperties(
+data class UsersConfiguration(
+
     var defaultRole: String = "User"
 )

@@ -1,4 +1,4 @@
-package ru.bjcreslin.naidizakupku.chromeExtension.controller
+package ru.bjcreslin.naidizakupku.chromeExtension.controller.api
 
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity

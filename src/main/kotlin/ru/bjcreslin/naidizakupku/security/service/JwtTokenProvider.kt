@@ -12,7 +12,7 @@ import org.springframework.security.core.Authentication
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
-import ru.bjcreslin.naidizakupku.cfg.JwtProperties
+import ru.bjcreslin.naidizakupku.cfg.JwtPropertiesConfiguration
 import ru.bjcreslin.naidizakupku.security.exceptions.InvalidTokenException
 import ru.bjcreslin.naidizakupku.security.exceptions.UnauthorizedException
 import java.nio.charset.StandardCharsets
@@ -21,7 +21,7 @@ import javax.crypto.SecretKey
 
 @Component
 class JwtTokenProvider(
-    private val jwtProperties: JwtProperties,
+    private val jwtPropertiesConfiguration: JwtPropertiesConfiguration,
     private val userDetailsService: UserDetailsService
 ) {
 
@@ -30,11 +30,11 @@ class JwtTokenProvider(
 
     @EventListener(ApplicationReadyEvent::class)
     fun init() {
-        codeSecret = Keys.hmacShaKeyFor(jwtProperties.secret.toByteArray(StandardCharsets.UTF_8))
+        codeSecret = Keys.hmacShaKeyFor(jwtPropertiesConfiguration.secret.toByteArray(StandardCharsets.UTF_8))
     }
 
     private fun getExpirationDate(currentDate: Date): Date {
-        return Date(currentDate.time + jwtProperties.expired * 1000)
+        return Date(currentDate.time + jwtPropertiesConfiguration.expired * 1000)
     }
 
     fun createAccessToken(userName: String, roles: List<String>): String {
@@ -63,9 +63,9 @@ class JwtTokenProvider(
     }
 
     fun resolveToken(req: HttpServletRequest): String? {
-        val bearerToken = req.getHeader(jwtProperties.header)
-        if (bearerToken != null && bearerToken.startsWith(jwtProperties.bearerPrefix)) {
-            return bearerToken.substring(jwtProperties.bearerPrefix.length)
+        val bearerToken = req.getHeader(jwtPropertiesConfiguration.header)
+        if (bearerToken != null && bearerToken.startsWith(jwtPropertiesConfiguration.bearerPrefix)) {
+            return bearerToken.substring(jwtPropertiesConfiguration.bearerPrefix.length)
         }
         return null
     }

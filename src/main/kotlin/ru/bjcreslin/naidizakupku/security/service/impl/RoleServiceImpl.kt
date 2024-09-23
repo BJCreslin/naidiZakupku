@@ -1,7 +1,7 @@
 package ru.bjcreslin.naidizakupku.security.service.impl
 
 import org.springframework.stereotype.Service
-import ru.bjcreslin.naidizakupku.cfg.UsersProperties
+import ru.bjcreslin.naidizakupku.cfg.UsersConfiguration
 import ru.bjcreslin.naidizakupku.security.entity.Role
 import ru.bjcreslin.naidizakupku.security.repository.RoleRepository
 import ru.bjcreslin.naidizakupku.security.service.RoleService
@@ -9,7 +9,7 @@ import ru.bjcreslin.naidizakupku.security.service.RoleService
 @Service
 class RoleServiceImpl(
     private val roleRepository: RoleRepository,
-    private val usersProperties: UsersProperties
+    private val usersConfiguration: UsersConfiguration
 ) : RoleService {
 
     override fun getDefaultRole(): Role {
@@ -18,6 +18,6 @@ class RoleServiceImpl(
     }
 
     fun getDefaultRoleName(): String {
-        return usersProperties.defaultRole
+        return usersConfiguration.defaultRole
     }
 }

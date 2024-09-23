@@ -10,7 +10,7 @@ import ru.bjcreslin.naidizakupku.user.entity.User
 @Service
 class UserServiceImpl(val userRepository: UserRepository, val roleService: RoleService) : UserService {
 
-    override fun saveUser(user: User): User {
+    override fun saveNewDeafultUser(user: User): User {
         val encoder = BCryptPasswordEncoder()
         val encodedPassword = encoder.encode(user.password)
         val role = roleService.getDefaultRole()

@@ -3,11 +3,11 @@ package ru.bjcreslin.naidizakupku
 import org.springframework.boot.autoconfigure.SpringBootApplication
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
-import ru.bjcreslin.naidizakupku.cfg.JwtProperties
-import ru.bjcreslin.naidizakupku.cfg.UsersProperties
+import ru.bjcreslin.naidizakupku.cfg.JwtPropertiesConfiguration
+import ru.bjcreslin.naidizakupku.cfg.UsersConfiguration
 
 @SpringBootApplication
-@EnableConfigurationProperties(value =[JwtProperties::class,UsersProperties::class])
+@EnableConfigurationProperties(value =[JwtPropertiesConfiguration::class,UsersConfiguration::class])
 class NaidiZakupkuApplication
 
 fun main(args: Array<String>) {
