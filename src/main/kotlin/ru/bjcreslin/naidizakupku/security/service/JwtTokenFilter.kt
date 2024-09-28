@@ -9,7 +9,7 @@ import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFilter() {
-    val LOGGING_WITH_TOKEN_NAME_S: kotlin.String = "Logging with token name: %s"
+    val LOGGING_WITH_TOKEN_NAME_S: String = "Logging with token name: %s"
 
     override fun doFilterInternal(
         request: HttpServletRequest,
