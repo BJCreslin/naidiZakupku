@@ -3,6 +3,7 @@ package ru.bjcreslin.naidizakupku.codeService.impl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import ru.bjcreslin.naidizakupku.cfg.CodeConfiguration
 import ru.bjcreslin.naidizakupku.codeService.TelegramCodeService
 import ru.bjcreslin.naidizakupku.codeService.dto.TelegramCodeDto
 import ru.bjcreslin.naidizakupku.codeService.entity.TelegramCodeEntity
@@ -15,7 +16,8 @@ import ru.bjcreslin.naidizakupku.user.entity.User
 class TelegramCodeServiceImpl(
     private val codeGeneratorService: CodeGeneratorService,
     private val telegramCodeRepository: TelegramCodeRepository,
-    private val deleteOldCodes: DeleteOldCodes
+    private val deleteOldCodes: DeleteOldCodes,
+    private val codeConfiguration: CodeConfiguration
 ) : TelegramCodeService {
     private val logger: Logger = LoggerFactory.getLogger(TelegramCodeServiceImpl::class.java)
 
@@ -23,7 +25,10 @@ class TelegramCodeServiceImpl(
         deleteOldCodes.delete()
         val entityCode = getOrCreateCode(user)
         logger.debug("Generated code: {} for user: {}", entityCode.code, user)
-        return TelegramCodeDto(code = entityCode.code, maxActionTime = entityCode.maxActionTime)
+        return TelegramCodeDto(
+            code = entityCode.code,
+            actionTimeMinutes = codeConfiguration.maxAttemptMinutes
+        )
     }
 
     override fun getUserByCode(code: Int): User? {

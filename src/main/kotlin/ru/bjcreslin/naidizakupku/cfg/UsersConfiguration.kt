@@ -10,5 +10,7 @@ import org.springframework.stereotype.Component
 @Component
 data class UsersConfiguration(
 
-    var defaultRole: String = "User"
+    var defaultRole: String = "User",
+
+    var telegramUserNamePrefix: String = "TelegramUser"
 )

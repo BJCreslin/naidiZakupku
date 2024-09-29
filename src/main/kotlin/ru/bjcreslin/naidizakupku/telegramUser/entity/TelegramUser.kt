@@ -1,4 +1,4 @@
-package ru.bjcreslin.naidizakupku.security.entity
+package ru.bjcreslin.naidizakupku.telegramUser.entity
 
 import jakarta.persistence.*
 import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
@@ -11,6 +11,6 @@ class TelegramUser(
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 
-    @Column(name = "telegram_id", nullable = true)
-    val telegramId: Long?
+    @Column(name = "telegram_id", nullable = false)
+    val telegramId: Long
 ) : BaseEntity()
