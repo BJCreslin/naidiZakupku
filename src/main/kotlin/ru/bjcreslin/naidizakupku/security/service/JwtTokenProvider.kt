@@ -25,7 +25,6 @@ class JwtTokenProvider(
     private val userDetailsService: UserDetailsService
 ) {
 
-    val rolesClaims: String = "role"
     private lateinit var codeSecret: SecretKey
 
     @EventListener(ApplicationReadyEvent::class)

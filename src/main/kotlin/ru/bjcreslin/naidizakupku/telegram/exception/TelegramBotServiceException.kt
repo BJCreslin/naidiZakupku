@@ -1,18 +1,15 @@
-package ru.bjcreslin.naidizakupku.telegram.exception;
+package ru.bjcreslin.naidizakupku.telegram.exception
 
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException
 
-public class TelegramBotServiceException extends RuntimeException {
+class TelegramBotServiceException : RuntimeException {
+    constructor(eMessage: String?, ex: TelegramApiException?) : super(eMessage, ex)
 
-    public static final String ERROR_SEND_MESSAGE = "Error send message to user TelegramId %s with text %s";
+    constructor(eMessage: String?) : super(eMessage)
 
-    public static final String USER_MUST_HAVE_TELEGRAM_ID = "User with id %d must have Telegram Id.";
+    companion object {
+        const val ERROR_SEND_MESSAGE: String = "Error send message to user TelegramId %s with text %s"
 
-    public TelegramBotServiceException(String eMessage, TelegramApiException ex) {
-        super(eMessage, ex);
-    }
-
-    public TelegramBotServiceException(String eMessage) {
-        super(eMessage);
+        const val USER_MUST_HAVE_TELEGRAM_ID: String = "User with id %d must have Telegram Id."
     }
 }

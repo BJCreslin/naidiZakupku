@@ -50,5 +50,9 @@ class TelegramBot(
         }
     }
 
+    override fun getBotToken(): String {
+        return super.getBotToken()
+    }
+
 
 }

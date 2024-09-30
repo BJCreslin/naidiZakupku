@@ -4,6 +4,9 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.cfg.UsersConfiguration
+import ru.bjcreslin.naidizakupku.security.entity.UserRole
+import ru.bjcreslin.naidizakupku.security.repository.UserRoleRepository
+import ru.bjcreslin.naidizakupku.security.service.RoleService
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 import ru.bjcreslin.naidizakupku.telegramUser.entity.TelegramUser
 import ru.bjcreslin.naidizakupku.telegramUser.repository.TelegramUserRepository

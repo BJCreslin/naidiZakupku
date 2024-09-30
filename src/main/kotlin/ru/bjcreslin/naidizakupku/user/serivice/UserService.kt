@@ -7,12 +7,6 @@ import ru.bjcreslin.naidizakupku.user.entity.User
 interface UserService {
 
     /**
-     * Сохранение пользователя
-     */
-    @Transactional
-    fun saveNewDefaultUser(user: User): User
-
-    /**
      * Поиск пользователя по имени
      */
     @Transactional(readOnly = true)

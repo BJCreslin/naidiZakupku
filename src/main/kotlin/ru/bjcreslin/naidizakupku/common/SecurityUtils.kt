@@ -5,6 +5,8 @@ import org.springframework.security.core.userdetails.UserDetails
 
 object SecurityUtils {
 
+    const val SYSTEM_USER_NAME = "system"
+
     /**
      * Получение текущего пользователя
      */
@@ -16,6 +18,6 @@ object SecurityUtils {
                 return principal.username
             }
         }
-        return null
+        return SYSTEM_USER_NAME
     }
 }

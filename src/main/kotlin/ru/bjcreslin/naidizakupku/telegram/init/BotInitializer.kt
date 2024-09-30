@@ -11,10 +11,13 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiRequestException
 import org.telegram.telegrambots.meta.generics.LongPollingBot
 import org.telegram.telegrambots.meta.generics.TelegramBot
 import org.telegram.telegrambots.updatesreceivers.DefaultBotSession
+import ru.bjcreslin.naidizakupku.cfg.BotConfiguration
 
 @Component
-class BotInitializer {
-    private val bot: TelegramBot? = null
+class BotInitializer(
+    private val botConfiguration: BotConfiguration,
+    private val telegramBot: TelegramBot
+) {
     val logger: Logger = LoggerFactory.getLogger(BotInitializer::class.java)
 
     @EventListener(ContextRefreshedEvent::class)
@@ -22,7 +25,7 @@ class BotInitializer {
     fun init() {
         val telegramBotsApi = TelegramBotsApi(DefaultBotSession::class.java)
         try {
-            telegramBotsApi.registerBot(bot as LongPollingBot?)
+            telegramBotsApi.registerBot(telegramBot as LongPollingBot)
             logger.info("Registered telegram Bot")
         } catch (e: TelegramApiRequestException) {
             logger.error(e.message)

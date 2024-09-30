@@ -6,11 +6,15 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
 import ru.bjcreslin.naidizakupku.security.dto.JwtUser
-import ru.bjcreslin.naidizakupku.security.repository.UserRepository
+import ru.bjcreslin.naidizakupku.security.repository.UserRoleRepository
 import ru.bjcreslin.naidizakupku.user.entity.User
+import ru.bjcreslin.naidizakupku.user.repository.UserRepository
 
 @Component
-class JwtUserDetailService(val repository: UserRepository) : UserDetailsService {
+class JwtUserDetailService(
+    val repository: UserRepository,
+    private val userRole: UserRoleRepository
+) : UserDetailsService {
 
     override fun loadUserByUsername(username: String?): UserDetails {
         if (username == null) {
@@ -23,9 +27,10 @@ class JwtUserDetailService(val repository: UserRepository) : UserDetailsService 
     }
 
     fun build(user: User): UserDetails {
-        val authorities: MutableList<SimpleGrantedAuthority>? = user.roles.stream()
-            .map { role -> SimpleGrantedAuthority(role.name) }
-            .toList()
+        val authorities: MutableList<SimpleGrantedAuthority>? =
+            user.userRoles.stream()
+                .map { role -> SimpleGrantedAuthority(role.role.name) }
+                .toList()
         return JwtUser(
             user.id,
             user.username,

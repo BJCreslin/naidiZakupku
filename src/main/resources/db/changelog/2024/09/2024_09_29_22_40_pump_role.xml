@@ -8,13 +8,13 @@
 
     <changeSet id="2024_09_15_21_42_pump_roles" author="Владимир">
         <comment>Добавил начальное заполенение ролей</comment>
-        <insert tableName="user_roles">
+        <insert tableName="roles">
             <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
             <column name="created_by" value="System"/>
             <column name="name" value="Admin"/>
         </insert>
 
-        <insert tableName="user_roles">
+        <insert tableName="roles">
             <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
             <column name="created_by" value="System"/>
             <column name="name" value="User"/>

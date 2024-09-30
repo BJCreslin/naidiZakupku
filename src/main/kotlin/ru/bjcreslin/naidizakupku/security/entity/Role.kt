@@ -1,13 +1,18 @@
 package ru.bjcreslin.naidizakupku.security.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 
+/**
+ * Роль пользователя
+ */
 @Entity
-@Table(name = "user_roles")
+@Table(name = "roles")
 data class Role(
+
     @Column(name = "name", unique = true, nullable = false)
     val name: String,
-    ) : BaseEntity()
+
+    @OneToMany(mappedBy = "role", cascade = [CascadeType.ALL], orphanRemoval = true)
+    val userRoles: MutableList<UserRole> = mutableListOf()
+) : BaseEntity()
