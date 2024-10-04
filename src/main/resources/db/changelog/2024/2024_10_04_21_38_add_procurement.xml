@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1728052657955-1" author="Владимир (generated)">
+        <createTable tableName="procurements">
+            <column autoIncrement="true" name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_procurements"/>
+            </column>
+            <column name="created_at" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_at" type="DATETIME"/>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="updated_by" type="VARCHAR(255)"/>
+            <column name="comment" type="VARCHAR(255)"/>
+            <column name="federal_law_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="link_placement" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="registry_number" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="publisher" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="price" type="DECIMAL"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1728052657955-2" author="Владимир (generated)">
+        <createTable tableName="user_procurement">
+            <column name="procurement_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_procurement"/>
+            </column>
+            <column name="user_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_procurement"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1728052657955-3" author="Владимир (generated)">
+        <addForeignKeyConstraint baseColumnNames="procurement_id" baseTableName="user_procurement"
+                                 constraintName="fk_usepro_on_procurement" referencedColumnNames="id"
+                                 referencedTableName="procurements"/>
+    </changeSet>
+
+    <changeSet id="1728052657955-4" author="Владимир (generated)">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_procurement"
+                                 constraintName="fk_usepro_on_user" referencedColumnNames="id"
+                                 referencedTableName="users"/>
+    </changeSet>
+
+</databaseChangeLog>

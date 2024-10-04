@@ -2,6 +2,7 @@ package ru.bjcreslin.naidizakupku.user.entity
 
 import jakarta.persistence.*
 import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
+import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
 import ru.bjcreslin.naidizakupku.security.entity.Role
 import ru.bjcreslin.naidizakupku.security.entity.UserRole
 import ru.bjcreslin.naidizakupku.telegramUser.entity.TelegramUser
@@ -22,5 +23,13 @@ data class User(
     val userRoles: MutableList<UserRole> = mutableListOf(),
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    val telegramUser: TelegramUser? = null
+    val telegramUser: TelegramUser? = null,
+
+    @ManyToMany
+    @JoinTable(
+        name = "user_procurement",
+        joinColumns = [JoinColumn(name = "user_id")],
+        inverseJoinColumns = [JoinColumn(name = "procurement_id")]
+    )
+    val procurements: Set<Procurement> = HashSet()
 ) : BaseEntity()
