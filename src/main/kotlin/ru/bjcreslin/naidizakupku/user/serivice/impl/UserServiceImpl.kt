@@ -3,6 +3,7 @@ package ru.bjcreslin.naidizakupku.user.serivice.impl
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import ru.bjcreslin.naidizakupku.security.dto.JwtUser
 import ru.bjcreslin.naidizakupku.security.entity.UserRole
 import ru.bjcreslin.naidizakupku.security.repository.UserRoleRepository
 import ru.bjcreslin.naidizakupku.security.service.RoleService
@@ -38,4 +39,9 @@ class UserServiceImpl(
         logger.info("Creating user $userDto")
         return user
     }
+
+    override fun findUserByUserDetails(jwtUser: JwtUser): User? {
+        return userRepository.findByUsername(jwtUser.username)
+    }
+
 }

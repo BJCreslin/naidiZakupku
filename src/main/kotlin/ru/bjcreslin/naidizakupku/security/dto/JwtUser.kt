@@ -3,7 +3,6 @@ package ru.bjcreslin.naidizakupku.security.dto
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
-import ru.bjcreslin.naidizakupku.user.entity.User
 
 class JwtUser(
     private val id: Long,

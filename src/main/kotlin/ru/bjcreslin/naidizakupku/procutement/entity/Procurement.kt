@@ -1,15 +1,15 @@
 package ru.bjcreslin.naidizakupku.procutement.entity
 
-import jakarta.persistence.Column
-import jakarta.persistence.Entity
-import jakarta.persistence.ManyToMany
-import jakarta.persistence.Table
+import jakarta.persistence.*
 import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 import ru.bjcreslin.naidizakupku.user.entity.User
 import java.math.BigDecimal
 
 @Entity
-@Table(name = "procurements")
+@Table(
+    name = "procurements",
+    indexes = [Index(name = "idx_registry_number", columnList = "registryNumber", unique = true)]
+)
 data class Procurement(
 
     @Column(name = "federal_law_number", nullable = false)
@@ -31,5 +31,5 @@ data class Procurement(
     val price: BigDecimal,
 
     @ManyToMany(mappedBy = "procurements")
-    val users: Set<User> = HashSet()
-): BaseEntity()
+    val users: MutableSet<User> = HashSet()
+) : BaseEntity()

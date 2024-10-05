@@ -5,17 +5,17 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.security.core.userdetails.UsernameNotFoundException
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
 import ru.bjcreslin.naidizakupku.security.dto.JwtUser
-import ru.bjcreslin.naidizakupku.security.repository.UserRoleRepository
 import ru.bjcreslin.naidizakupku.user.entity.User
 import ru.bjcreslin.naidizakupku.user.repository.UserRepository
 
 @Component
 class JwtUserDetailService(
-    val repository: UserRepository,
-    private val userRole: UserRoleRepository
+    val repository: UserRepository
 ) : UserDetailsService {
 
+    @Transactional
     override fun loadUserByUsername(username: String?): UserDetails {
         if (username == null) {
             throw IllegalArgumentException("Invalid username")

@@ -9,4 +9,6 @@ import ru.bjcreslin.naidizakupku.user.entity.User
 interface ProcurementRepository : JpaRepository<Procurement, Long> {
 
     fun findAllByUsers(users: Set<User>): List<Procurement>
+
+    fun findByRegistryNumber(registryNumber: String): Procurement?
 }
