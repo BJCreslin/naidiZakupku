@@ -10,7 +10,7 @@ import java.math.BigDecimal
     name = "procurements",
     indexes = [Index(name = "idx_registry_number", columnList = "registryNumber", unique = true)]
 )
-data class Procurement(
+class Procurement(
 
     @Column(name = "federal_law_number", nullable = false)
     val federalLawNumber: String,
@@ -30,6 +30,6 @@ data class Procurement(
     @Column(name = "price")
     val price: BigDecimal,
 
-    @ManyToMany(mappedBy = "procurements")
+    @ManyToMany(mappedBy = "procurements", fetch = FetchType.LAZY)
     val users: MutableSet<User> = HashSet()
 ) : BaseEntity()

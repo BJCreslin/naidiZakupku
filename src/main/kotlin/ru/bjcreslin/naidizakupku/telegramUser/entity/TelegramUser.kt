@@ -7,7 +7,8 @@ import ru.bjcreslin.naidizakupku.user.entity.User
 @Entity
 @Table(name = "telegram_users")
 class TelegramUser(
-    @OneToOne(fetch = FetchType.EAGER)
+
+    @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
     val user: User,
 

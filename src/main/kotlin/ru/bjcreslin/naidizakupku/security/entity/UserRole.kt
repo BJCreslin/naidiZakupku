@@ -9,7 +9,7 @@ import ru.bjcreslin.naidizakupku.user.entity.User
  */
 @Entity
 @Table(name = "user_roles")
-data class UserRole(
+class UserRole(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
