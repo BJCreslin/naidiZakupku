@@ -49,13 +49,15 @@ dependencies {
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("org.springframework.boot:spring-boot-starter-logging")
 
+    implementation("com.h2database:h2")
+
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    runtimeOnly("org.postgresql:postgresql")
+
     compileOnly("org.jetbrains.kotlin:kotlin-noarg")
     compileOnly("org.jetbrains.kotlin:kotlin-allopen")
 
