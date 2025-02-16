@@ -16,7 +16,7 @@ import ru.bjcreslin.naidizakupku.security.dto.JwtUser
 @RequestMapping("api/chromeExtension/v1")
 class ChromeExtensionController(private val chromeExtensionService: ChromeExtensionService) {
 
-    @PostMapping("procurement")
+    @PostMapping(*arrayOf("procurement"))
     fun newProcurement(
         @RequestBody @Valid procurement: ProcurementDto,
         @AuthenticationPrincipal jwtUser: JwtUser
