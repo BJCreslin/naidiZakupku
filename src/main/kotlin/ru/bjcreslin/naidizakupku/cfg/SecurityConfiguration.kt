@@ -30,11 +30,12 @@ class SecurityConfiguration(
 
     @Bean
     @Throws(java.lang.Exception::class)
-     fun filterChain(http: HttpSecurity): SecurityFilterChain {
+    fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry.requestMatchers(HttpMethod.DELETE)
-                    .hasRole("ADMIN")
+                authorizationManagerRequestMatcherRegistry
+                    .requestMatchers("/health").permitAll()
+                    .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers("/api/chromeExtension/v1/login**").permitAll()
