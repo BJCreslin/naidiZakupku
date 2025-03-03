@@ -15,6 +15,11 @@ noArg {
 group = "ru.bjcreslin"
 version = "0.0.1-SNAPSHOT"
 
+tasks.bootJar {
+    archiveBaseName.set("myapp")
+    archiveVersion.set("1.0.0")
+}
+
 java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(17)
