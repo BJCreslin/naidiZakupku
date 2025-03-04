@@ -10,7 +10,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/user/repo.git'  // Укажи свой репозиторий
+                git 'https://github.com/BJCreslin/naidiZakupku.git'  // Укажи свой репозиторий
             }
         }
 
