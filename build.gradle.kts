@@ -43,7 +43,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-configuration-processor")
     implementation("io.jsonwebtoken:jjwt:$jsonwebtoken")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -56,7 +55,7 @@ dependencies {
     implementation("com.h2database:h2")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    providedRuntime("org.springframework.boot:spring-boot-starter-tomcat")
+    compileOnly("org.springframework.boot:spring-boot-starter-tomcat") // исправлено
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
     testImplementation("org.springframework.modulith:spring-modulith-starter-test")
@@ -64,7 +63,6 @@ dependencies {
 
     compileOnly("org.jetbrains.kotlin:kotlin-noarg")
     compileOnly("org.jetbrains.kotlin:kotlin-allopen")
-
 }
 
 dependencyManagement {
