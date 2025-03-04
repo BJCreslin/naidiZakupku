@@ -13,12 +13,13 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh 'chmod +x gradlew'
-                sh './gradlew clean build -x test'
-            }
-        }
+   stage('Build') {
+       steps {
+           sh 'chmod +x gradlew'
+           sh './gradlew clean build -x test'
+           sh 'ls -l build/libs/'  // Выведет список файлов в build/libs
+       }
+   }
 
         stage('Set JAR_NAME') {
             steps {
@@ -33,8 +34,7 @@ pipeline {
         stage('Deploy') {
             steps {
                 script {
-                    // Проверка, что JAR файл существует
-                    if (fileExists(env.JAR_NAME)) {
+                    if (fileExists("$JAR_NAME")) {
                         sh '''
                             pkill -f $JAR_NAME || true
                             mkdir -p $APP_DIR
