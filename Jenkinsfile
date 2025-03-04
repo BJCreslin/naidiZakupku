@@ -2,7 +2,6 @@ pipeline {
     agent any
 
     environment {
-        JAR_NAME = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()  // Автоматически находит первый JAR
         APP_DIR = "/opt/myapp"
         PORT = "9000"
     }
@@ -17,19 +16,35 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'chmod +x gradlew'
-//                             sh 'bash ./gradlew clean build -x test'
                 sh './gradlew clean build -x test'
+            }
+        }
+
+        stage('Set JAR_NAME') {
+            steps {
+                script {
+                    // Получаем путь к первому JAR файлу
+                    env.JAR_NAME = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()
+                    echo "Found JAR: $JAR_NAME"
+                }
             }
         }
 
         stage('Deploy') {
             steps {
-                sh '''
-                    pkill -f $JAR_NAME || true
-                    mkdir -p $APP_DIR
-                    cp $JAR_NAME $APP_DIR/myapp.jar
-                    nohup java -jar $APP_DIR/myapp.jar --server.port=$PORT > $APP_DIR/app.log 2>&1 &
-                '''
+                script {
+                    // Проверка, что JAR файл существует
+                    if (fileExists(env.JAR_NAME)) {
+                        sh '''
+                            pkill -f $JAR_NAME || true
+                            mkdir -p $APP_DIR
+                            cp $JAR_NAME $APP_DIR/myapp.jar
+                            nohup java -jar $APP_DIR/myapp.jar --server.port=$PORT > $APP_DIR/app.log 2>&1 &
+                        '''
+                    } else {
+                        error "JAR file not found: $JAR_NAME"
+                    }
+                }
             }
         }
     }
