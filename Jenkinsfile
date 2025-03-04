@@ -40,7 +40,7 @@ pipeline {
                             mkdir -p $APP_DIR
                             cp $JAR_NAME $APP_DIR/myapp.jar
                             echo "Starting application..."
-                            nohup java -jar $APP_DIR/myapp.jar --server.port=$PORT > $APP_DIR/app.log 2>&1 &
+                           java -jar /opt/myapp/myapp.jar --server.port=9000
                         '''
                     } else {
                         error "JAR file not found: $JAR_NAME"
