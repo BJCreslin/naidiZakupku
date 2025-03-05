@@ -39,6 +39,7 @@ pipeline {
                             pkill -f $JAR_NAME || true
                             mkdir -p $APP_DIR
                             cp $JAR_NAME $APP_DIR/myapp.jar
+                            printenv
                             echo "Starting application..."
                            java -jar /opt/myapp/myapp.jar --server.port=9000
                         '''
