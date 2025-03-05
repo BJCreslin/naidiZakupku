@@ -41,7 +41,7 @@ pipeline {
                             cp $JAR_NAME $APP_DIR/myapp.jar
                             printenv
                             echo "Starting application..."
-                           java -jar /opt/myapp/myapp.jar --server.port=9000
+                            nohup java -jar $APP_DIR/myapp.jar --server.port=$PORT > $APP_DIR/app.log 2>&1 &
                         '''
                     } else {
                         error "JAR file not found: $JAR_NAME"
