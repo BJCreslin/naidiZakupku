@@ -42,7 +42,7 @@ pipeline {
                            cp $JAR_NAME $APP_DIR/myapp.jar
                            chmod +x $APP_DIR/myapp.jar
                            echo "Starting application..."
-                           nohup java -jar "/opt/myapp/myapp.jar" --server.port=9000 > /opt/myapp/app.log 2>&1 &
+                           nohup java -jar "/opt/myapp/myapp.jar" --server.port=9000 --debug > /opt/myapp/app.log 2>&1 &
                            sleep 10
                            pgrep -f myapp.jar || (echo "Application failed to start" && exit 1)
                        '''
