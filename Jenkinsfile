@@ -31,23 +31,26 @@ pipeline {
             }
         }
 
-        stage('Deploy') {
-            steps {
-                script {
-                    if (fileExists("$JAR_NAME")) {
-                        sh '''
-                            pkill -f $JAR_NAME || true
-                            mkdir -p $APP_DIR
-                            cp $JAR_NAME $APP_DIR/myapp.jar
-                            printenv
-                            echo "Starting application..."
-                            nohup java -jar $APP_DIR/myapp.jar --server.port=$PORT > $APP_DIR/app.log 2>&1 &
-                        '''
-                    } else {
-                        error "JAR file not found: $JAR_NAME"
-                    }
-                }
-            }
-        }
+       stage('Deploy') {
+           steps {
+               script {
+                   if (fileExists("$JAR_NAME")) {
+                       sh '''
+                           pkill -f "java -jar $APP_DIR/myapp.jar" || true
+                           sleep 2
+                           mkdir -p $APP_DIR
+                           cp $JAR_NAME $APP_DIR/myapp.jar
+                           chmod +x $APP_DIR/myapp.jar
+                           echo "Starting application..."
+                           nohup java -jar "$APP_DIR/myapp.jar" --server.port="$PORT" > "$APP_DIR/app.log" 2>&1 &
+                           sleep 5
+                           pgrep -f myapp.jar || (echo "Application failed to start" && exit 1)
+                       '''
+                   } else {
+                       error "JAR file not found: $JAR_NAME"
+                   }
+               }
+           }
+       }
     }
 }
