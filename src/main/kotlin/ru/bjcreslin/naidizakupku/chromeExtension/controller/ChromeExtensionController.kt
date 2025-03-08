@@ -1,4 +1,4 @@
-package ru.bjcreslin.naidizakupku.chromeExtension.controller.api
+package ru.bjcreslin.naidizakupku.chromeExtension.controller
 
 import jakarta.validation.Valid
 import org.springframework.http.HttpStatus
