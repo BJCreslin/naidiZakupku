@@ -4,6 +4,8 @@ pipeline {
     environment {
         APP_DIR = "/opt/myapp"
         PORT = "9000"
+        IMAGE_NAME = "myapp"
+        CONTAINER_NAME = "myapp-container"
     }
 
     stages {
@@ -13,7 +15,7 @@ pipeline {
             }
         }
 
-   stage('Build') {
+    stage('Build') {
        steps {
            sh 'chmod +x gradlew'
            sh './gradlew clean build -x test'
@@ -21,7 +23,7 @@ pipeline {
        }
    }
 
-        stage('Set JAR_NAME') {
+   stage('Set JAR_NAME') {
             steps {
                 script {
                     // Получаем путь к первому JAR файлу
@@ -31,26 +33,19 @@ pipeline {
             }
         }
 
-       stage('Deploy') {
-           steps {
-               script {
-                   if (fileExists("$JAR_NAME")) {
-                       sh '''
-                           pkill -f "java -jar $APP_DIR/myapp.jar" || true
-                           sleep 2
-                           mkdir -p $APP_DIR
-                           cp $JAR_NAME $APP_DIR/myapp.jar
-                           chmod +x $APP_DIR/myapp.jar
-                           echo "Starting application..."
-                           nohup java -jar "/opt/myapp/myapp.jar" --server.port=9000 --debug > /opt/myapp/app.log 2>&1 &
-                           sleep 10
-                           pgrep -f myapp.jar || (echo "Application failed to start" && exit 1)
-                       '''
-                   } else {
-                       error "JAR file not found: $JAR_NAME"
-                   }
-               }
-           }
-       }
+   stage('Build Docker Image') {
+                    steps {
+                        sh 'docker build -t myapp .'
+                    }
+                }
+
+   stage('Run Docker Container') {
+            steps {
+                sh 'docker stop myapp-container || true'
+                sh 'docker rm myapp-container || true'
+                sh 'docker run -d --name myapp-container -p 9000:9000 myapp'
+            }
+        }
     }
 }
+
