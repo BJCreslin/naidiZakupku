@@ -6,6 +6,7 @@ pipeline {
         PORT = "9000"
         IMAGE_NAME = "myapp"
         CONTAINER_NAME = "myapp-container"
+        NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN = credentials('NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN')
     }
 
     stages {
@@ -43,7 +44,9 @@ pipeline {
             steps {
                 sh 'docker stop myapp-container || true'
                 sh 'docker rm myapp-container || true'
-                sh 'docker run -d --name myapp-container -p 9000:9000 myapp'
+                sh 'docker run -d --name myapp-container \
+                -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="$NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN" \
+                -p 9000:9000 myapp'
             }
         }
     }
