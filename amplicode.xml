@@ -11,13 +11,4 @@
   <component name="AmplicodeJpaPluginProjectSettings">
     <option name="lastSelectedLanguage" value="Kotlin" />
   </component>
-  <component name="AmplicodePersistenceUnitSettings">
-    <persistence-units>
-      <persistence-unit name="Default" defaultIncludeChangeLogFile="src/main/resources/db/changelog/db.changelog-master.xml">
-        <packages>
-          <package value="ru.bjcreslin.naidizakupku" />
-        </packages>
-      </persistence-unit>
-    </persistence-units>
-  </component>
 </project>

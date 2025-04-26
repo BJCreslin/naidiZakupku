@@ -19,7 +19,7 @@ pipeline {
     stage('Build') {
        steps {
            sh 'chmod +x gradlew'
-           sh './gradlew clean build -x test'
+           sh './gradlew clean build -x test --no-daemon --console=plain'
            sh 'ls -l build/libs/'  // Выведет список файлов в build/libs
        }
    }
