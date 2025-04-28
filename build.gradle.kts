@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.24"
     id("org.jetbrains.kotlin.plugin.noarg") version "1.9.24"
     kotlin("plugin.jpa") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
 }
 
 noArg {
@@ -32,7 +33,8 @@ repositories {
 extra["springModulithVersion"] = "1.2.1"
 
 val jsonwebtoken = "0.12.3"
-val telegrambots = "6.9.7.1"
+val telegrambots = "7.0.1"
+val mapstruct = "1.6.0"
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
@@ -63,6 +65,10 @@ dependencies {
 
     compileOnly("org.jetbrains.kotlin:kotlin-noarg")
     compileOnly("org.jetbrains.kotlin:kotlin-allopen")
+    kapt("org.mapstruct:mapstruct-processor:$mapstruct")
+    compileOnly("org.mapstruct:mapstruct:$mapstruct")
+    kapt("org.mapstruct:mapstruct-processor:$mapstruct")
+    compileOnly("org.mapstruct:mapstruct:$mapstruct")
 }
 
 dependencyManagement {
