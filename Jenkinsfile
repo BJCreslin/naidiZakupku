@@ -14,7 +14,6 @@ pipeline {
     options {
         timestamps()
         timeout(time: 20, unit: 'MINUTES')
-        ansiColor('xterm')
     }
 
     stages {
@@ -26,33 +25,35 @@ pipeline {
 
         stage('Build') {
             steps {
-                script {
-                    // Запуск билда с псевдо-хартбитом и контролем ошибок
-                    def result = sh(
-                        script: '''#!/bin/bash
-                            chmod +x gradlew
+                wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
+                    script {
+                        def result = sh(
+                            script: '''#!/bin/bash
+                                chmod +x gradlew
 
-                            (
-                              while true; do
-                                echo "[Jenkins Heartbeat] $(date)"
-                                sleep 30
-                              done
-                            ) &
-                            HB_PID=$!
+                                (
+                                  while true; do
+                                    echo "[Jenkins Heartbeat] $(date)"
+                                    sleep 30
+                                  done
+                                ) &
 
-                            ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
-                            BUILD_EXIT_CODE=${PIPESTATUS[0]}
+                                HB_PID=$!
 
-                            kill $HB_PID || true
-                            wait $HB_PID 2>/dev/null || true
+                                ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                                BUILD_EXIT_CODE=${PIPESTATUS[0]}
 
-                            exit $BUILD_EXIT_CODE
-                        ''',
-                        returnStatus: true
-                    )
+                                kill $HB_PID || true
+                                wait $HB_PID 2>/dev/null || true
 
-                    if (result != 0) {
-                        error("Gradle build failed with exit code ${result}")
+                                exit $BUILD_EXIT_CODE
+                            ''',
+                            returnStatus: true
+                        )
+
+                        if (result != 0) {
+                            error("Gradle build failed with exit code ${result}")
+                        }
                     }
                 }
             }
