@@ -14,6 +14,7 @@ pipeline {
     options {
         timestamps()
         timeout(time: 20, unit: 'MINUTES')
+        ansiColor('xterm')
     }
 
     stages {
@@ -25,28 +26,35 @@ pipeline {
 
         stage('Build') {
             steps {
-                sh '''
-                    #!/bin/bash
-                    chmod +x gradlew
+                script {
+                    // Запуск билда с псевдо-хартбитом и контролем ошибок
+                    def result = sh(
+                        script: '''#!/bin/bash
+                            chmod +x gradlew
 
-                    # Псевдо-heartbeat: запуск в subshell + вывод каждые 30 сек
-                    (
-                      while true; do
-                        echo "[Jenkins Heartbeat] $(date)"
-                        sleep 30
-                      done
-                    ) &
-                    HB_PID=$!
+                            (
+                              while true; do
+                                echo "[Jenkins Heartbeat] $(date)"
+                                sleep 30
+                              done
+                            ) &
+                            HB_PID=$!
 
-                    # Сборка
-                    ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
-                    BUILD_EXIT_CODE=${PIPESTATUS[0]}
+                            ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                            BUILD_EXIT_CODE=${PIPESTATUS[0]}
 
-                    kill $HB_PID || true
-                    wait $HB_PID 2>/dev/null || true
+                            kill $HB_PID || true
+                            wait $HB_PID 2>/dev/null || true
 
-                    exit $BUILD_EXIT_CODE
-                '''
+                            exit $BUILD_EXIT_CODE
+                        ''',
+                        returnStatus: true
+                    )
+
+                    if (result != 0) {
+                        error("Gradle build failed with exit code ${result}")
+                    }
+                }
             }
             post {
                 always {
@@ -59,7 +67,11 @@ pipeline {
         stage('Set JAR_NAME') {
             steps {
                 script {
-                    env.JAR_NAME = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()
+                    def jar = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()
+                    if (!jar) {
+                        error("No JAR found in build/libs/")
+                    }
+                    env.JAR_NAME = jar
                     echo "Found JAR: $JAR_NAME"
                 }
             }
@@ -67,22 +79,28 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t myapp .'
+                sh "docker build -t ${IMAGE_NAME} ."
             }
         }
 
         stage('Run Docker Container') {
             steps {
-                sh '''
-                    docker stop myapp-container || true
-                    docker rm myapp-container || true
-                    docker run -d --name myapp-container \
-                        -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="$NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN" \
-                        -e GIGACHAT_AUTH_ID="$GIGACHAT_AUTH_ID" \
-                        -e GIGACHAT_AUTH_CLIENT_SECRET="$GIGACHAT_AUTH_CLIENT_SECRET" \
-                        -p 9000:9000 myapp
-                '''
+                sh """
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm ${CONTAINER_NAME} || true
+                    docker run -d --name ${CONTAINER_NAME} \\
+                        -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="${NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN}" \\
+                        -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
+                        -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
+                        -p ${PORT}:${PORT} ${IMAGE_NAME}
+                """
             }
+        }
+    }
+
+    post {
+        failure {
+            echo "Pipeline failed. Check logs above for more details."
         }
     }
 }
