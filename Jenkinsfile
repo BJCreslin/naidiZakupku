@@ -7,6 +7,8 @@ pipeline {
         IMAGE_NAME = "myapp"
         CONTAINER_NAME = "myapp-container"
         NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN = credentials('NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN')
+        GIGACHAT_AUTH_ID = credentials('GIGACHAT_AUTH_ID')
+        GIGACHAT_AUTH_CLIENT_SECRET = credentials('GIGACHAT_AUTH_CLIENT_SECRET')
     }
 
     stages {
@@ -46,6 +48,8 @@ pipeline {
                 sh 'docker rm myapp-container || true'
                 sh 'docker run -d --name myapp-container \
                 -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="$NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN" \
+                -e GIGACHAT_AUTH_ID="GIGACHAT_AUTH_ID" \
+                -e GIGACHAT_AUTH_CLIENT_SECRET="GIGACHAT_AUTH_CLIENT_SECRET" \
                 -p 9000:9000 myapp'
             }
         }
