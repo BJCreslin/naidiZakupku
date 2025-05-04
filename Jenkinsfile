@@ -11,6 +11,11 @@ pipeline {
         GIGACHAT_AUTH_CLIENT_SECRET = credentials('GIGACHAT_AUTH_CLIENT_SECRET')
     }
 
+    options {
+        timestamps()
+        timeout(time: 20, unit: 'MINUTES')
+    }
+
     stages {
         stage('Checkout') {
             steps {
@@ -19,33 +24,24 @@ pipeline {
         }
 
         stage('Build') {
-                   steps {
-                       sh '''
-                           #!/bin/bash
-                           chmod +x gradlew
+            steps {
+                sh '''
+                    #!/bin/bash
+                    set -e
 
-                           # Запуск heartbeat в фоне
-                           (while true; do echo ">>> Jenkins is alive: $(date)"; sleep 30; done) &
-                           HEARTBEAT_PID=$!
+                    chmod +x gradlew
 
-                           # Запуск сборки
-                           ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
-                           BUILD_EXIT_CODE=${PIPESTATUS[0]}
-
-                           # Завершаем heartbeat
-                           kill $HEARTBEAT_PID
-
-                           # Возвращаем код завершения сборки
-                           exit $BUILD_EXIT_CODE
-                       '''
-                   }
-                   post {
-                       always {
-                           echo '=== Gradle Build Output ==='
-                           sh 'cat build_output.log || true'
-                       }
-                   }
-               }
+                    # Запуск сборки
+                    ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                '''
+            }
+            post {
+                always {
+                    echo '=== Gradle Build Output ==='
+                    sh 'cat build_output.log || true'
+                }
+            }
+        }
 
         stage('Set JAR_NAME') {
             steps {
