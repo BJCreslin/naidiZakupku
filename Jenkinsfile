@@ -40,7 +40,7 @@ pipeline {
 
                                 HB_PID=$!
 
-                                ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                                ./gradlew clean build --build-cache -x test --no-daemon --console=plain | tee build_output.log
                                 BUILD_EXIT_CODE=${PIPESTATUS[0]}
 
                                 kill $HB_PID || true
