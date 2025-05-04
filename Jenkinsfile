@@ -19,16 +19,29 @@ pipeline {
         }
 
     stage('Build') {
-       steps {
-              sh 'chmod +x gradlew'
-              sh './gradlew clean build -x test --no-daemon --console=plain | tee build_output.log'
-          }
-          post {
-              always {
-                  sh 'cat build_output.log || true'
-              }
-          }
-   }
+        steps {
+            sh '''
+                chmod +x gradlew
+                # Старт фонового heartbeat-пинга
+                ( while true; do echo ">>> Jenkins is alive: $(date)"; sleep 30; done ) &
+                HEARTBEAT_PID=$!
+
+                # Основная сборка
+                ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                BUILD_EXIT_CODE=$?
+
+                # Остановим heartbeat
+                kill $HEARTBEAT_PID
+                exit $BUILD_EXIT_CODE
+            '''
+        }
+        post {
+            always {
+                echo '=== Gradle Build Output ==='
+                sh 'cat build_output.log || true'
+            }
+        }
+    }
 
    stage('Set JAR_NAME') {
             steps {
@@ -47,16 +60,17 @@ pipeline {
                 }
 
    stage('Run Docker Container') {
-            steps {
-                sh 'docker stop myapp-container || true'
-                sh 'docker rm myapp-container || true'
-                sh 'docker run -d --name myapp-container \
-                -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="$NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN" \
-                -e GIGACHAT_AUTH_ID="GIGACHAT_AUTH_ID" \
-                -e GIGACHAT_AUTH_CLIENT_SECRET="GIGACHAT_AUTH_CLIENT_SECRET" \
-                -p 9000:9000 myapp'
-            }
-        }
-    }
+       steps {
+           sh '''
+               docker stop myapp-container || true
+               docker rm myapp-container || true
+               docker run -d --name myapp-container \
+                   -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="$NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN" \
+                   -e GIGACHAT_AUTH_ID="$GIGACHAT_AUTH_ID" \
+                   -e GIGACHAT_AUTH_CLIENT_SECRET="$GIGACHAT_AUTH_CLIENT_SECRET" \
+                   -p 9000:9000 myapp
+           '''
+       }
+   }
 }
 
