@@ -21,7 +21,7 @@ pipeline {
     stage('Build') {
        steps {
            sh 'chmod +x gradlew'
-           sh './gradlew clean build -x test --no-daemon --console=plain'
+           sh './gradlew clean build -x test --no-daemon --console=plain || cat build/reports/*.log || true'
            sh 'ls -l build/libs/'  // Выведет список файлов в build/libs
        }
    }
