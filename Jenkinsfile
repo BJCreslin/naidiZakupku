@@ -20,10 +20,14 @@ pipeline {
 
     stage('Build') {
        steps {
-           sh 'chmod +x gradlew'
-           sh './gradlew clean build -x test --no-daemon --console=plain || cat build/reports/*.log || true'
-           sh 'ls -l build/libs/'  // Выведет список файлов в build/libs
-       }
+              sh 'chmod +x gradlew'
+              sh './gradlew clean build -x test --no-daemon --console=plain | tee build_output.log'
+          }
+          post {
+              always {
+                  sh 'cat build_output.log || true'
+              }
+          }
    }
 
    stage('Set JAR_NAME') {
