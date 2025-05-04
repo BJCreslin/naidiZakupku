@@ -18,30 +18,33 @@ pipeline {
             }
         }
 
-        stage('Build') {
-            steps {
-                sh '''
-                    chmod +x gradlew
-                    # Start heartbeat to prevent timeout
-                    ( while true; do echo ">>> Jenkins is alive: $(date)"; sleep 30; done ) &
-                    HEARTBEAT_PID=$!
+       stage('Build') {
+           steps {
+               sh '''
+                   chmod +x gradlew
 
-                    # Run Gradle build
-                    ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
-                    BUILD_EXIT_CODE=$?
+                   # Запуск heartbeat в фоне
+                   (while true; do echo ">>> Jenkins is alive: $(date)"; sleep 30; done) &
+                   HEARTBEAT_PID=$!
 
-                    # Stop heartbeat
-                    kill $HEARTBEAT_PID
-                    exit $BUILD_EXIT_CODE
-                '''
-            }
-            post {
-                always {
-                    echo '=== Gradle Build Output ==='
-                    sh 'cat build_output.log || true'
-                }
-            }
-        }
+                   # Запуск сборки
+                   ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                   BUILD_EXIT_CODE=${PIPESTATUS[0]}
+
+                   # Завершаем heartbeat
+                   kill $HEARTBEAT_PID
+
+                   # Возвращаем код завершения сборки
+                   exit $BUILD_EXIT_CODE
+               '''
+           }
+           post {
+               always {
+                   echo '=== Gradle Build Output ==='
+                   sh 'cat build_output.log || true'
+               }
+           }
+       }
 
         stage('Set JAR_NAME') {
             steps {
