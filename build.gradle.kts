@@ -33,7 +33,7 @@ repositories {
 extra["springModulithVersion"] = "1.2.1"
 
 val jsonwebtoken = "0.12.3"
-val telegrambots = "7.0.1"
+val telegrambots = "6.9.7.1"
 val mapstruct = "1.6.0"
 
 dependencies {
