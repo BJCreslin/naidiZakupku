@@ -27,12 +27,25 @@ pipeline {
             steps {
                 sh '''
                     #!/bin/bash
-                    set -e
-
                     chmod +x gradlew
 
-                    # Запуск сборки
+                    # Псевдо-heartbeat: запуск в subshell + вывод каждые 30 сек
+                    (
+                      while true; do
+                        echo "[Jenkins Heartbeat] $(date)"
+                        sleep 30
+                      done
+                    ) &
+                    HB_PID=$!
+
+                    # Сборка
                     ./gradlew clean build -x test --no-daemon --console=plain | tee build_output.log
+                    BUILD_EXIT_CODE=${PIPESTATUS[0]}
+
+                    kill $HB_PID || true
+                    wait $HB_PID 2>/dev/null || true
+
+                    exit $BUILD_EXIT_CODE
                 '''
             }
             post {
