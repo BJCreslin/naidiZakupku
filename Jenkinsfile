@@ -28,6 +28,7 @@ pipeline {
                 wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
                     script {
                         def gradleScript = '''#!/bin/bash
+                            chmod +x gradlew
                             heartbeat() {
                                 while true; do
                                     echo "[Jenkins Heartbeat] $(date)"
