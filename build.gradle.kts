@@ -69,6 +69,7 @@ dependencies {
     compileOnly("org.mapstruct:mapstruct:$mapstruct")
     kapt("org.mapstruct:mapstruct-processor:$mapstruct")
     compileOnly("org.mapstruct:mapstruct:$mapstruct")
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
 }
 
 dependencyManagement {
