@@ -27,30 +27,27 @@ pipeline {
             steps {
                 wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
                     script {
-                        def result = sh(
-                            script: '''#!/bin/bash
-                                chmod +x gradlew
-
-                                (
-                                  while true; do
+                        def gradleScript = '''#!/bin/bash
+                            heartbeat() {
+                                while true; do
                                     echo "[Jenkins Heartbeat] $(date)"
                                     sleep 30
-                                  done
-                                ) &
+                                done
+                            }
 
-                                HB_PID=$!
+                            heartbeat &
+                            HB_PID=$!
 
-                                ./gradlew clean build --build-cache -x test --no-daemon --console=plain | tee build_output.log
-                                BUILD_EXIT_CODE=${PIPESTATUS[0]}
+                            ./gradlew clean build --build-cache --no-daemon --console=plain | tee build_output.log
+                            BUILD_EXIT_CODE=${PIPESTATUS[0]}
 
-                                kill $HB_PID || true
-                                wait $HB_PID 2>/dev/null || true
+                            kill $HB_PID || true
+                            wait $HB_PID 2>/dev/null || true
 
-                                exit $BUILD_EXIT_CODE
-                            ''',
-                            returnStatus: true
-                        )
+                            exit $BUILD_EXIT_CODE
+                        '''
 
+                        def result = sh(script: gradleScript, returnStatus: true)
                         if (result != 0) {
                             error("Gradle build failed with exit code ${result}")
                         }
@@ -65,7 +62,7 @@ pipeline {
             }
         }
 
-        stage('Set JAR_NAME') {
+        stage('Build Docker Image') {
             steps {
                 script {
                     def jar = sh(script: "ls build/libs/*.jar | head -n 1", returnStdout: true).trim()
@@ -73,14 +70,10 @@ pipeline {
                         error("No JAR found in build/libs/")
                     }
                     env.JAR_NAME = jar
-                    echo "Found JAR: $JAR_NAME"
-                }
-            }
-        }
+                    echo "Using JAR: $JAR_NAME"
 
-        stage('Build Docker Image') {
-            steps {
-                sh "docker build -t ${IMAGE_NAME} ."
+                    sh "docker build -t ${IMAGE_NAME} ."
+                }
             }
         }
 
