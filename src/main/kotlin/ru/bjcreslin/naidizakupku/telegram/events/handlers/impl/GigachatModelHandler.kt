@@ -9,6 +9,6 @@ class GigachatModelHandler(
     val gigachatService: GigachatService
 ) : CommandHandler {
     override fun execute(chatId: Long, params: String): String {
-        return gigachatService.getModels().data.joinToString(separator = "\n")
+        return gigachatService.getModels(chatId)!!.models().data().joinToString("\n")
     }
 }

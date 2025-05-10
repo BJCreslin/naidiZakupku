@@ -1,79 +1,68 @@
 package ru.bjcreslin.naidizakupku.gigachat
 
-import org.slf4j.LoggerFactory
-import org.springframework.beans.factory.annotation.Value
-import org.springframework.http.MediaType
+import chat.giga.client.GigaChatClient
+import chat.giga.client.auth.AuthClient
+import chat.giga.client.auth.AuthClientBuilder.OAuthBuilder
+import chat.giga.model.ModelName
+import chat.giga.model.Scope
+import chat.giga.model.completion.ChatMessage
+import chat.giga.model.completion.ChatMessageRole
+import chat.giga.model.completion.CompletionRequest
 import org.springframework.stereotype.Service
-import org.springframework.web.reactive.function.client.WebClient
-import ru.bjcreslin.naidizakupku.gigachat.dto.GigaChatModelList
-import ru.bjcreslin.naidizakupku.gigachat.exception.GigaChatResponseException
-import org.slf4j.Logger
-import ru.bjcreslin.naidizakupku.gigachat.dto.GigaChatRequest
-import ru.bjcreslin.naidizakupku.gigachat.dto.GigaChatResponse
+import ru.bjcreslin.naidizakupku.cfg.GigaChatConfiguration
+
 
 @Service
-class GigachatService(
-    val gigachatTokenService: GigachatTokenService,
-    private val unsafeWebClient: WebClient,
-    @Value("\${gigachat.api.url}") private val apiUrl: String
-) {
-    private val logger: Logger = LoggerFactory.getLogger(GigachatService::class.java)
+class GigachatService(val chatConfiguration: GigaChatConfiguration) {
+    private val Logger: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
 
-
-    fun getModels(): GigaChatModelList {
-        val token = gigachatTokenService.getAccessToken()
-        logger.info("Отправлен запрос на получение данных моделей: {$token}")
-
-        val response = unsafeWebClient.get()
-            .uri("$apiUrl/models")
-            .headers {
-                it.setBearerAuth(token)
-                it["accept"] = MediaType.APPLICATION_JSON_VALUE
-            }
-            .retrieve()
-            .bodyToMono(GigaChatModelList::class.java)
-            .block()
-
-        return response
-            ?: throw GigaChatResponseException("Не удалось получить данные моделей")
+    fun getModels(chatId: Long): GigaChatClient? {
+        val client: GigaChatClient? = GigaChatClient.builder()
+            .authClient(
+                AuthClient.builder()
+                    .withOAuth(
+                        OAuthBuilder.builder()
+                            .scope(Scope.GIGACHAT_API_PERS)
+                            .clientId(chatConfiguration.clientId)
+                            .clientSecret(chatConfiguration.clientSecret)
+                            .build()
+                    )
+                    .build()
+            )
+            .logRequests(true)
+            .logResponses(true)
+            .build()
+        Logger.debug("User $chatId trying to get list of models. Balance: ${client?.balance().toString()}")
+        return client
     }
 
-    fun getAnswer(prompt: String): String {
-        val token = gigachatTokenService.getAccessToken()
-        logger.info("Отправлен запрос на получение ответа")
-
-        val requestBody = createRequestBody(prompt)
-
-        val response = unsafeWebClient.post()
-            .uri("$apiUrl/chat/completions")
-            .headers {
-                it.setBearerAuth(token)
-                it["accept"] = MediaType.APPLICATION_JSON_VALUE
-                it["content-type"] = MediaType.APPLICATION_JSON_VALUE
-            }
-            .bodyValue(requestBody)
-
-            .retrieve()
-            .bodyToMono(GigaChatResponse::class.java)
-            .block()
-
-        return response?.choices?.first()?.message?.content ?: ""
+    fun getAnswer(text: String): String {
+        val client: GigaChatClient? = GigaChatClient.builder()
+            .verifySslCerts(false)
+            .authClient(
+                AuthClient.builder()
+                    .withOAuth(
+                        OAuthBuilder.builder()
+                            .scope(Scope.GIGACHAT_API_PERS)
+                            .clientId(chatConfiguration.clientId)
+                            .clientSecret(chatConfiguration.clientSecret)
+                            .build()
+                    )
+                    .build()
+            )
+            .build()
+        val response = client?.completions(
+            CompletionRequest.builder()
+                .model(ModelName.GIGA_CHAT)
+                .message(
+                    ChatMessage.builder()
+                        .content(text)
+                        .role(ChatMessageRole.USER)
+                        .build()
+                )
+                .build()
+        )
+        Logger.info("Response from gigachat: ${response.toString()}")
+        return response.toString()
     }
-
-    private fun createRequestBody(prompt: String) =
-        mapOf(
-               "model" to "GigaChat",
-               "messages" to listOf(
-                   mapOf(
-                       "role" to "system",
-                       "content" to "Ты Пушкин А.С."
-                   ),
-                   mapOf(
-                       "role" to "user",
-                       "content" to prompt
-                   )
-               ),
-               "stream" to false,
-               "update_interval" to 0
-           )
-    }
+}

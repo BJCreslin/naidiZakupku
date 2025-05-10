@@ -30,6 +30,7 @@ extra["springModulithVersion"] = "1.2.1"
 val jsonwebtoken = "0.12.3"
 val telegrambots = "6.9.7.1"
 val mapstruct = "1.6.3"
+val gigachat = "0.1.7"
 
 dependencies {
     implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:3.3.2"))
@@ -45,6 +46,7 @@ dependencies {
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
+    implementation("org.springframework.boot:spring-boot-starter-cache")
 
     implementation("io.jsonwebtoken:jjwt:$jsonwebtoken")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -53,7 +55,9 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
-    implementation("io.projectreactor.netty:reactor-netty-http") // поддержка WebClient через Netty
+    implementation("io.projectreactor.netty:reactor-netty-http")
+    implementation("com.github.ben-manes.caffeine:caffeine")
+    implementation("chat.giga:gigachat-java:${gigachat}")
 
     implementation("org.mapstruct:mapstruct:${mapstruct}")
     kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
