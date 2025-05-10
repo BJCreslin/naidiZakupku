@@ -29,7 +29,7 @@ extra["springModulithVersion"] = "1.2.1"
 
 val jsonwebtoken = "0.12.3"
 val telegrambots = "6.9.7.1"
-val mapstruct = "1.6.0"
+val mapstruct = "1.6.3"
 
 dependencies {
     implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:3.3.2"))
@@ -52,6 +52,7 @@ dependencies {
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
 
+    implementation("org.mapstruct:mapstruct:${mapstruct}")
     kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
