@@ -51,6 +51,8 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
+    implementation("org.springframework.boot:spring-boot-starter-webflux") // для WebClient
+    implementation("io.projectreactor.netty:reactor-netty-http") // поддержка WebClient через Netty
 
     implementation("org.mapstruct:mapstruct:${mapstruct}")
     kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
