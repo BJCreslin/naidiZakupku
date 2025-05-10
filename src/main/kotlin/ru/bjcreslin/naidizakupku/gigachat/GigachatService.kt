@@ -36,7 +36,7 @@ class GigachatService(val chatConfiguration: GigaChatConfiguration) {
         return client
     }
 
-    fun getAnswer(text: String): String {
+    fun getAnswer(text: String, chatId: Long): String? {
         val client: GigaChatClient? = GigaChatClient.builder()
             .verifySslCerts(false)
             .authClient(
@@ -60,9 +60,10 @@ class GigachatService(val chatConfiguration: GigaChatConfiguration) {
                         .role(ChatMessageRole.USER)
                         .build()
                 )
-                .build()
+                .build(),
+            chatId.toString()
         )
         Logger.info("Response from gigachat: ${response.toString()}")
-        return response.toString()
+        return response?.choices()?.get(0)?.message()?.content()
     }
 }

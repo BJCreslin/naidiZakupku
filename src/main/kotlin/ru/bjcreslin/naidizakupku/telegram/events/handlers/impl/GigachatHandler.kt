@@ -10,6 +10,6 @@ class GigachatHandler(
 ) : CommandHandler {
     override fun execute(chatId: Long, params: String): String {
         return gigachatService.getAnswer("Это тестовый запрос к гигачату. " +
-                "Напиши четверостишье про кота и собаку")
+                "Напиши четверостишье про кота и собаку" , chatId)
     }
 }
