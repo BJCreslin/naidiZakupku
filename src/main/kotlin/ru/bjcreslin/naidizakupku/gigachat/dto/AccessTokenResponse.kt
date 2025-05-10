@@ -7,7 +7,7 @@ data class AccessTokenResponse(
     val accessToken: String,
     @JsonProperty("token_type")
     val tokenType: String?,
-    @JsonProperty("expires_in")
-    val expiresIn: Int,
-    val scope: String
+    @JsonProperty("expires_at")
+    val expiresAt: Int,
+    val scope: String?
 )
