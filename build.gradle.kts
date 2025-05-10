@@ -5,6 +5,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.24"
     kotlin("plugin.jpa") version "1.9.24"
     id("org.jetbrains.kotlin.plugin.noarg") version "1.9.24"
+    kotlin("kapt") version "1.9.24"
 }
 
 noArg {
@@ -51,8 +52,7 @@ dependencies {
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
 
-    compileOnly("org.mapstruct:mapstruct:${mapstruct}")
-    implementation("org.mapstruct:mapstruct-processor:${mapstruct}")
+    kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
