@@ -2,8 +2,8 @@ package ru.bjcreslin.naidizakupku.gigachat.dto
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class ModelList(
+data class GigaChatModelList(
     @JsonProperty("object")
     val obj: String,
-    val data: List<Model>
+    val data: List<GigaChatModel>
 )
