@@ -1,5 +1,6 @@
 package ru.bjcreslin.naidizakupku.gigachat
 
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Service
@@ -53,21 +54,27 @@ class GigachatTokenService(
             add("scope", ScopeType.GIGACHAT_API_PERS.toString())
         }
 
-        return webClient.post()
+        val rawResponse = webClient.post()
             .uri(authUrl)
             .headers { it.addAll(headers) }
             .bodyValue(formData)
             .retrieve()
-            .bodyToMono(AccessTokenResponse::class.java)
-            .flatMap { response ->
-                if (response.access_token != null) {
-                    Mono.just(response.access_token)
-                } else {
-                    Mono.error(AccessTokenNotTakenException("Пустой access token"))
-                }
-            }
-            .doOnTerminate { tokenExpiryTime = System.currentTimeMillis() + 3600000 }
-            .block() ?: throw AccessTokenNotTakenException("Ошибка получения access token")
+            .bodyToMono(String::class.java) // сначала получаем сырой JSON
+            .doOnNext { println("Raw response JSON: $it") } // логируем
+            .block() ?: throw AccessTokenNotTakenException("Пустой ответ от сервера")
+
+        val response = try {
+            jacksonObjectMapper().readValue(rawResponse, AccessTokenResponse::class.java)
+        } catch (e: Exception) {
+            throw AccessTokenNotTakenException("Ошибка парсинга ответа: ${e.message}")
+        }
+
+        if (response.accessToken == null) {
+            throw AccessTokenNotTakenException("Пустой access token")
+        }
+
+        tokenExpiryTime = System.currentTimeMillis() + 3600000
+        return response.accessToken
     }
 
     /***
