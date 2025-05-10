@@ -26,15 +26,15 @@ class GigachatTokenService(
 
     private val lock = Any()
 
-    fun getAccessToken(): Mono<String> {
+    fun getAccessToken(): String {
         val now = System.currentTimeMillis()
         if (cachedToken != null && now < tokenExpiryTime) {
-            return Mono.just(cachedToken!!)
+            return cachedToken!!
         }
 
         synchronized(lock) {
             if (cachedToken != null && System.currentTimeMillis() < tokenExpiryTime) {
-                return Mono.just(cachedToken!!)
+                return cachedToken!!
             }
         }
 
@@ -66,7 +66,8 @@ class GigachatTokenService(
                     Mono.error(AccessTokenNotTakenException("Пустой access token"))
                 }
             }
-            .doOnTerminate { tokenExpiryTime = System.currentTimeMillis() + 3600000 }  // обновляем время истечения токена
+            .doOnTerminate { tokenExpiryTime = System.currentTimeMillis() + 3600000 }
+            .block() ?: throw AccessTokenNotTakenException("Ошибка получения access token")
     }
 
     /***
