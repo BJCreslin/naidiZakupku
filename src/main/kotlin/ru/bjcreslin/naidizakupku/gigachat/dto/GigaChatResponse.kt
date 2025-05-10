@@ -11,11 +11,11 @@ data class Message(
     val role: String,
     val content: String,
     val created: Long,
-    val name: String,
+    val name: String?,
     @JsonProperty("functions_state_id")
     val functionsStateId: String,
     @JsonProperty("function_call")
-    val functionCall: FunctionCall
+    val functionCall: FunctionCall?
 )
 
 data class Choice(
