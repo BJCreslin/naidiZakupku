@@ -13,7 +13,7 @@ pipeline {
 
     options {
         timestamps()
-        timeout(time: 20, unit: 'MINUTES')
+        timeout(time: 10, unit: 'MINUTES')
     }
 
     stages {
@@ -28,24 +28,31 @@ pipeline {
                 wrap([$class: 'AnsiColorBuildWrapper', 'colorMapName': 'xterm']) {
                     script {
                         def gradleScript = '''#!/bin/bash
-                            chmod +x gradlew
-                            heartbeat() {
-                                while true; do
-                                    echo "[Jenkins Heartbeat] $(date)"
-                                    sleep 30
-                                done
-                            }
+                        chmod +x gradlew
 
-                            heartbeat &
-                            HB_PID=$!
+                        heartbeat() {
+                            while true; do
+                                echo "[Jenkins Heartbeat] $(date)"
+                                sleep 30
+                            done
+                        }
 
-                            ./gradlew clean build --build-cache --no-daemon --console=plain | tee build_output.log
-                            BUILD_EXIT_CODE=${PIPESTATUS[0]}
+                        heartbeat &
+                        HB_PID=$!
 
-                            kill $HB_PID || true
-                            wait $HB_PID 2>/dev/null || true
+                        # Используем временный файл для кода выхода
+                        EXIT_CODE_FILE=gradle-exit-code.tmp
 
-                            exit $BUILD_EXIT_CODE
+                        (./gradlew clean build --build-cache --no-daemon --console=plain; echo $? > $EXIT_CODE_FILE) | tee build_output.log
+
+                        kill $HB_PID || true
+                        wait $HB_PID 2>/dev/null || true
+
+                        # Считываем код выхода
+                        BUILD_EXIT_CODE=$(cat $EXIT_CODE_FILE)
+                        rm -f $EXIT_CODE_FILE
+
+                        exit $BUILD_EXIT_CODE
                         '''
 
                         def result = sh(script: gradleScript, returnStatus: true)
