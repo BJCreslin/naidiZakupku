@@ -13,7 +13,7 @@ data class Message(
     val created: Long,
     val name: String?,
     @JsonProperty("functions_state_id")
-    val functionsStateId: String,
+    val functionsStateId: String?,
     @JsonProperty("function_call")
     val functionCall: FunctionCall?
 )
