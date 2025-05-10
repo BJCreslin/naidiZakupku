@@ -43,6 +43,8 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.springframework.modulith:spring-modulith-starter-core")
+    implementation("org.springframework.boot:spring-boot-starter-logging")
+    implementation("org.springframework.boot:spring-boot-starter-webflux")
 
     implementation("io.jsonwebtoken:jjwt:$jsonwebtoken")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -51,7 +53,6 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
-    implementation("org.springframework.boot:spring-boot-starter-webflux") // для WebClient
     implementation("io.projectreactor.netty:reactor-netty-http") // поддержка WebClient через Netty
 
     implementation("org.mapstruct:mapstruct:${mapstruct}")
