@@ -4,7 +4,7 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.chromeExtension.dto.ProcurementDto
 import ru.bjcreslin.naidizakupku.chromeExtension.service.ChromeExtensionService
-import ru.bjcreslin.naidizakupku.procutement.service.ProcurementService
+import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 import ru.bjcreslin.naidizakupku.security.dto.JwtUser
 import ru.bjcreslin.naidizakupku.user.serivice.UserService
 

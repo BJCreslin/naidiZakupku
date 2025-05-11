@@ -1,11 +1,11 @@
-package ru.bjcreslin.naidizakupku.procutement.service.impl
+package ru.bjcreslin.naidizakupku.procurement.service.impl
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.chromeExtension.dto.ProcurementDto
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
-import ru.bjcreslin.naidizakupku.procutement.repository.ProcurementRepository
-import ru.bjcreslin.naidizakupku.procutement.service.ProcurementService
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.repository.ProcurementRepository
+import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 @Service

@@ -1,7 +1,7 @@
 package ru.bjcreslin.naidizakupku.procurement.filter
 
 import org.springframework.data.jpa.domain.Specification
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 data class ProcurementFilter(val users: MutableSet<User> = HashSet()) {

@@ -1,8 +1,8 @@
-package ru.bjcreslin.naidizakupku.procutement.service
+package ru.bjcreslin.naidizakupku.procurement.service
 
 import org.springframework.transaction.annotation.Transactional
 import ru.bjcreslin.naidizakupku.chromeExtension.dto.ProcurementDto
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 interface ProcurementService {

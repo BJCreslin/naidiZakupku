@@ -2,7 +2,7 @@ package ru.bjcreslin.naidizakupku.user.entity
 
 import jakarta.persistence.*
 import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.security.entity.UserRole
 import ru.bjcreslin.naidizakupku.telegramUser.entity.TelegramUser
 

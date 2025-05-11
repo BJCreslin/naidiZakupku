@@ -1,8 +1,8 @@
 package ru.bjcreslin.naidizakupku.telegram.events.handlers.impl
 
 import org.springframework.stereotype.Service
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
-import ru.bjcreslin.naidizakupku.procutement.service.ProcurementService
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 

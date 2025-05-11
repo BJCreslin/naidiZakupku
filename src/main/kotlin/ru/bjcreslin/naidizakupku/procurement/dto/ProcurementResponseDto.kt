@@ -4,7 +4,7 @@ import ru.bjcreslin.naidizakupku.user.dto.UserDto
 import java.math.BigDecimal
 
 /**
- * DTO for {@link ru.bjcreslin.naidizakupku.procutement.entity.Procurement}
+ * DTO for {@link ru.bjcreslin.naidizakupku.procurement.entity.Procurement}
  */
 data class ProcurementResponseDto(
     var id: Long = 0,

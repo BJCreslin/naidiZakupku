@@ -1,6 +1,11 @@
-package ru.bjcreslin.naidizakupku.procutement.entity
+package ru.bjcreslin.naidizakupku.procurement.entity
 
-import jakarta.persistence.*
+import jakarta.persistence.Column
+import jakarta.persistence.Entity
+import jakarta.persistence.FetchType
+import jakarta.persistence.Index
+import jakarta.persistence.ManyToMany
+import jakarta.persistence.Table
 import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 import ru.bjcreslin.naidizakupku.user.entity.User
 import java.math.BigDecimal

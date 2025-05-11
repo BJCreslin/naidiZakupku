@@ -3,7 +3,7 @@ package ru.bjcreslin.naidizakupku.procurement.mapper
 import org.mapstruct.Mapper
 import org.mapstruct.MappingTarget
 import ru.bjcreslin.naidizakupku.procurement.dto.ProcurementResponseDto
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 
 @Mapper(componentModel = "spring")
 interface ProcurementMapper {

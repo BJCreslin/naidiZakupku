@@ -21,8 +21,8 @@ import org.springframework.web.server.ResponseStatusException
 import ru.bjcreslin.naidizakupku.procurement.dto.ProcurementResponseDto
 import ru.bjcreslin.naidizakupku.procurement.filter.ProcurementFilter
 import ru.bjcreslin.naidizakupku.procurement.mapper.ProcurementMapper
-import ru.bjcreslin.naidizakupku.procutement.entity.Procurement
-import ru.bjcreslin.naidizakupku.procutement.repository.ProcurementRepository
+import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
+import ru.bjcreslin.naidizakupku.procurement.repository.ProcurementRepository
 import java.io.IOException
 import java.util.Optional
 
