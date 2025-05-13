@@ -47,6 +47,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
     implementation("org.springframework.boot:spring-boot-starter-cache")
+    implementation("org.springframework.boot:spring-boot-starter-data-rest")
 
     implementation("io.jsonwebtoken:jjwt:$jsonwebtoken")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
