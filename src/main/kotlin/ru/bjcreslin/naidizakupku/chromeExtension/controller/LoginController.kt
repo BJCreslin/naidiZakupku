@@ -10,7 +10,7 @@ import ru.bjcreslin.naidizakupku.chromeExtension.dto.NumberCodeRequestDto
 import ru.bjcreslin.naidizakupku.chromeExtension.service.LoginService
 
 @RestController
-@RequestMapping("api/chromeExtension/v1/login")
+@RequestMapping("api/v1/login")
 class LoginController(
     private val loginService: LoginService
 ) {
@@ -21,5 +21,4 @@ class LoginController(
     ): ResponseEntity<String> {
         return ResponseEntity.ok().body(loginService.login(codeRequest))
     }
-
 }

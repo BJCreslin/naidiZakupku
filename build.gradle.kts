@@ -1,11 +1,11 @@
 plugins {
-    id("org.springframework.boot") version "3.3.2"
+    id("org.springframework.boot") version "3.4.5"
     id("io.spring.dependency-management") version "1.1.6"
-    kotlin("jvm") version "1.9.24"
-    kotlin("plugin.spring") version "1.9.24"
-    kotlin("plugin.jpa") version "1.9.24"
-    id("org.jetbrains.kotlin.plugin.noarg") version "1.9.24"
-    kotlin("kapt") version "1.9.24"
+    kotlin("jvm") version "2.1.20"
+    kotlin("plugin.spring") version "2.1.20"
+    kotlin("plugin.jpa") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.noarg") version "2.1.20"
+    kotlin("kapt") version "2.1.20"
 }
 
 noArg {
@@ -33,7 +33,7 @@ val mapstruct = "1.6.3"
 val gigachat = "0.1.7"
 
 dependencies {
-    implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:3.3.2"))
+    implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-security")

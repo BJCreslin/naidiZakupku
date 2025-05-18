@@ -6,8 +6,8 @@ import ru.bjcreslin.naidizakupku.security.entity.Role
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 
-@RepositoryRestResource(path = "/api/users", collectionResourceRel = "users", itemResourceRel = "user")
+@RepositoryRestResource(path = "/api/v1/users", collectionResourceRel = "users", itemResourceRel = "user")
 interface UserRepository : CrudRepository<User, Long>
 
-@RepositoryRestResource(path = "/api/roles", collectionResourceRel = "roles", itemResourceRel = "role")
+@RepositoryRestResource(path = "/api/v1/roles", collectionResourceRel = "roles", itemResourceRel = "role")
 interface RoleRepository : CrudRepository<Role, Long>
