@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 import ru.bjcreslin.naidizakupku.security.entity.Role
 
 @Repository
-@RepositoryRestResource(path = "/api/v1/roles", collectionResourceRel = "roles", itemResourceRel = "role")
+@RepositoryRestResource(path = "roles", collectionResourceRel = "roles", itemResourceRel = "role")
 interface RoleRepository: JpaRepository<Role, Long> {
 
     fun findByName(name: String): Role?
