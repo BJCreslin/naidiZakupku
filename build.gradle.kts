@@ -6,9 +6,15 @@ plugins {
     kotlin("plugin.jpa") version "2.1.20"
     id("org.jetbrains.kotlin.plugin.noarg") version "2.1.20"
     kotlin("kapt") version "2.1.20"
+    id("org.jetbrains.kotlin.plugin.allopen") version "2.1.20"
 }
 
 noArg {
+    annotation("javax.persistence.Entity")
+}
+
+
+allOpen {
     annotation("javax.persistence.Entity")
 }
 
@@ -41,8 +47,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.boot:spring-boot-configuration-processor")
-    implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.springframework.modulith:spring-modulith-starter-core")
     implementation("org.springframework.boot:spring-boot-starter-logging")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -51,7 +55,6 @@ dependencies {
 
     implementation("io.jsonwebtoken:jjwt:$jsonwebtoken")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
@@ -60,11 +63,12 @@ dependencies {
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("chat.giga:gigachat-java:${gigachat}")
 
+    kapt("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.mapstruct:mapstruct:${mapstruct}")
     kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
+//    compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
