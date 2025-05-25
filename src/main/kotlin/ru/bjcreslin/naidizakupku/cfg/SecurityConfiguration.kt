@@ -35,6 +35,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/health").permitAll()
+                    .requestMatchers("api/v1/login").permitAll()
                     .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
