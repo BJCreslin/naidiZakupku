@@ -33,7 +33,7 @@ val mapstruct = "1.6.3"
 val gigachat = "0.1.7"
 
 dependencies {
-    implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies"))
+    implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:3.4.5"))
 
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-security")
