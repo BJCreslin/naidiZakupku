@@ -59,7 +59,6 @@ dependencies {
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
-    implementation("io.projectreactor.netty:reactor-netty-http")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("chat.giga:gigachat-java:${gigachat}")
 
