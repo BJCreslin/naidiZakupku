@@ -11,11 +11,27 @@ import org.springframework.web.filter.OncePerRequestFilter
 class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFilter() {
     val LOGGING_WITH_TOKEN_NAME_S: String = "Logging with token name: %s"
 
+    private val publicPaths = listOf(
+        "/api/health",
+        "/api/health/",
+        "/api/v1/login",
+        "/api/v1/login/",
+        "/api/chromeExtension/v1/login"
+    )
+
     override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
+        val path = request.requestURI
+
+        // Пропускаем фильтр, если путь публичный
+        if (publicPaths.any { path.startsWith(it) }) {
+            filterChain.doFilter(request, response)
+            return
+        }
+
         val token = jwtTokenProvider.resolveToken(request)
         try {
             token?.let {
