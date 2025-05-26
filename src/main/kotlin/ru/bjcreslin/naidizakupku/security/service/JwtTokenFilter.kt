@@ -26,7 +26,6 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
     ) {
         val path = request.requestURI
 
-        // Пропускаем фильтр, если путь публичный
         if (publicPaths.any { path.startsWith(it) }) {
             filterChain.doFilter(request, response)
             return
@@ -34,21 +33,12 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
 
         val token = jwtTokenProvider.resolveToken(request)
         try {
-            token?.let {
-                if (jwtTokenProvider.validateToken(token)) {
-                    val auth = jwtTokenProvider.getAuthentication(token)
-                    auth?.let {
-                        SecurityContextHolder.getContext().authentication = auth
-                        if (logger.isDebugEnabled) {
-                            logger.debug(
-                                String.format(
-                                    LOGGING_WITH_TOKEN_NAME_S,
-                                    jwtTokenProvider.getUsername(token)
-                                )
-                            )
-                        }
-                    }
-                }
+            if (token != null && jwtTokenProvider.validateToken(token)) {
+                val auth = jwtTokenProvider.getAuthentication(token)
+                SecurityContextHolder.getContext().authentication = auth
+                    logger.debug(String.format(LOGGING_WITH_TOKEN_NAME_S, jwtTokenProvider.getUsername(token)))
+            } else {
+                SecurityContextHolder.clearContext()
             }
         } catch (e: Exception) {
             SecurityContextHolder.clearContext()
