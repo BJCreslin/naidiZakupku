@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RestController
 import java.time.Instant
 
 @RestController
-@RequestMapping("/health")
+@RequestMapping("api/health")
 class HealthCheckController {
     @GetMapping
     fun checkHealth(): HealthResponse {

@@ -34,7 +34,7 @@ class SecurityConfiguration(
         http.csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/health", "/health/**").permitAll()
+                    .requestMatchers("api/health", "api/health/**").permitAll()
                     .requestMatchers("api/v1/login/**").permitAll()
                     .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasAnyRole("ADMIN")
