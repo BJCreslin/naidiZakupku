@@ -14,9 +14,12 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
     private val publicPaths = listOf(
         "/api/health",
         "/api/health/",
+        "/api/health/**",
         "/api/v1/login",
         "/api/v1/login/",
-        "/api/chromeExtension/v1/login"
+        "/api/v1/login/**",
+        "/api/chromeExtension/v1/login",
+        "/api/chromeExtension/v1/login**"
     )
 
     override fun doFilterInternal(
