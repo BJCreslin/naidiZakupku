@@ -13,13 +13,14 @@ import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
-import ru.bjcreslin.naidizakupku.security.service.JwtTokenProvider
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import ru.bjcreslin.naidizakupku.security.service.JwtTokenFilter
 
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration(
-    val jwtTokenProvider: JwtTokenProvider
+    val jwtTokenFilter: JwtTokenFilter
 ) {
 
     @Bean
@@ -48,6 +49,7 @@ class SecurityConfiguration(
                     SessionCreationPolicy.STATELESS
                 )
             }
+        http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
     }
 

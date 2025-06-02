@@ -4,22 +4,18 @@ import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
 import org.springframework.security.core.context.SecurityContextHolder
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFilter() {
-    val LOGGING_WITH_TOKEN_NAME_S: String = "Logging with token name: %s"
 
-    private val publicPaths = listOf(
-        "/api/health",
-        "/api/health/",
-        "/api/health/**",
-        "/api/v1/login",
-        "/api/v1/login/",
-        "/api/v1/login/**",
-        "/api/chromeExtension/v1/login",
-        "/api/chromeExtension/v1/login**"
+    private val publicPathMatchers = listOf(
+        AntPathRequestMatcher("/api/health"),
+        AntPathRequestMatcher("/api/health/**"),
+        AntPathRequestMatcher("/api/v1/login/**"),
+        AntPathRequestMatcher("/api/chromeExtension/v1/login**")
     )
 
     override fun doFilterInternal(
@@ -27,9 +23,8 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        val path = request.requestURI
-
-        if (publicPaths.any { path.startsWith(it) }) {
+        // Разрешённые пути – без проверки токена
+        if (publicPathMatchers.any { it.matches(request) }) {
             filterChain.doFilter(request, response)
             return
         }
@@ -38,8 +33,9 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
         try {
             if (token != null && jwtTokenProvider.validateToken(token)) {
                 val auth = jwtTokenProvider.getAuthentication(token)
-                SecurityContextHolder.getContext().authentication = auth
-                    logger.debug(String.format(LOGGING_WITH_TOKEN_NAME_S, jwtTokenProvider.getUsername(token)))
+                if (auth != null) {
+                    SecurityContextHolder.getContext().authentication = auth
+                }
             } else {
                 SecurityContextHolder.clearContext()
             }
@@ -47,6 +43,7 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
             SecurityContextHolder.clearContext()
             throw e
         }
+
         filterChain.doFilter(request, response)
     }
 }
