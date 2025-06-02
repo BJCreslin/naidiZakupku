@@ -43,7 +43,7 @@ pipeline {
                         # Используем временный файл для кода выхода
                         EXIT_CODE_FILE=gradle-exit-code.tmp
 
-                        (./gradlew clean build --build-cache --no-daemon --console=plain; echo $? > $EXIT_CODE_FILE) | tee build_output.log
+                        (./gradlew clean build --build-cache --daemon --console=plain; echo $? > $EXIT_CODE_FILE) | tee build_output.log
 
                         kill $HB_PID || true
                         wait $HB_PID 2>/dev/null || true
