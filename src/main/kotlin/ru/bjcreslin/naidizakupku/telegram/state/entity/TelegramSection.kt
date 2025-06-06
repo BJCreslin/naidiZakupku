@@ -13,6 +13,9 @@ class TelegramSectionUser(
     @JoinColumn(name = "user_id", unique = true, nullable = false)
     var user: User,
 
+    @Column(name = "telegram_id", nullable = false)
+    val telegramId: Long,
+
     /*** Сеуция телеграмм */
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)

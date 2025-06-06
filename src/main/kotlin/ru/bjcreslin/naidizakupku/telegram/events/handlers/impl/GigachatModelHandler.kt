@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.gigachat.GigachatService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 
-@Service("/model")
+@Service("gigachat#model")
 class GigachatModelHandler(
     val gigachatService: GigachatService
 ) : CommandHandler {

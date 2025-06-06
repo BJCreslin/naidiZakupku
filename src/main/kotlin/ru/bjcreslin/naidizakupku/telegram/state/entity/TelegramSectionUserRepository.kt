@@ -6,4 +6,6 @@ import org.springframework.stereotype.Repository
 @Repository
 interface TelegramSectionUserRepository : JpaRepository<TelegramSectionUser, Long> {
 
+    fun findByTelegramId(telegramId: Long): TelegramSectionUser?
+
 }

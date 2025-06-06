@@ -6,7 +6,7 @@ import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 
-@Service("/list")
+@Service("root#list")
 class ProcurementsListBotService (
     private val telegramUserService: TelegramUserService,
     private val procurementService: ProcurementService

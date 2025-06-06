@@ -5,7 +5,7 @@ import ru.bjcreslin.naidizakupku.codeService.TelegramCodeService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 
-@Service("/code")
+@Service("root#code")
 class CodeBotService(
     private val telegramCodeService: TelegramCodeService,
     private val telegramUserService: TelegramUserService

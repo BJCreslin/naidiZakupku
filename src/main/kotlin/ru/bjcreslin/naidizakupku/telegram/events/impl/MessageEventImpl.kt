@@ -5,10 +5,12 @@ import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import ru.bjcreslin.naidizakupku.telegram.events.MessageEvent
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
+import ru.bjcreslin.naidizakupku.telegram.state.service.TelegramStateService
 
 @Service
 class MessageEventImpl(
-    private val commandServices: Map<String, CommandHandler>
+    private val commandServices: Map<String, CommandHandler>,
+    val stateService: TelegramStateService
 ) : MessageEvent {
 
     override fun action(update: Update): SendMessage {
@@ -18,7 +20,8 @@ class MessageEventImpl(
         val message = SendMessage()
         message.chatId = chatId.toString()
 
-        val commandService = commandServices[messageText]
+        val key = stateService.getCommandHandlerKey(chatId, messageText)
+        val commandService = commandServices[key]
         if (commandService != null) {
             val response = commandService.execute(chatId, messageText)
             message.text = response

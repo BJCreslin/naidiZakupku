@@ -4,7 +4,7 @@ import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 
-@Service("/start")
+@Service("root#start")
 class StartBotService(
     private val telegramUserService: TelegramUserService
 ) : CommandHandler {
