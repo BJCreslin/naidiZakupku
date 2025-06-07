@@ -1,11 +1,15 @@
 package ru.bjcreslin.naidizakupku.telegram.state.entity
 
 import jakarta.persistence.*
-import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 
 @Entity
 @Table(name = "telegram_section_user")
 class TelegramSectionUser(
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    val id: Long = 0,
 
     @Column(name = "telegram_id", nullable = false)
     val telegramId: Long,
@@ -19,4 +23,4 @@ class TelegramSectionUser(
     @Column(name = "other_data")
     var otherData: String? = null
 
-) : BaseEntity()
+)
