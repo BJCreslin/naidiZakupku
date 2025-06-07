@@ -3,6 +3,7 @@ package ru.bjcreslin.naidizakupku.telegram.events.handlers.impl
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.codeService.TelegramCodeService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
+import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 
 @Service("root#code")
@@ -19,6 +20,10 @@ class CodeBotService(
         val codeText =
             """Код для входа в сервис ${code.code}, действует ${minutes} ${getMinuteWord(minutes)}.""".trimIndent()
         return codeText
+    }
+
+    override fun getSupportedState(): SectionState {
+        return SectionState.ROOT
     }
 
     fun getMinuteWord(minutes: Long): String {

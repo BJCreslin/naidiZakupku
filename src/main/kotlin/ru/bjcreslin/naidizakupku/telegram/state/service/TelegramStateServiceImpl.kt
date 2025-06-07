@@ -10,7 +10,7 @@ class TelegramStateServiceImpl(val repository: TelegramSectionUserRepository) : 
     override fun getState(chatID: Long): SectionState {
         val telegramState = repository.findByTelegramId(chatID)
         if (telegramState == null) {
-            return SectionState.MAIN_MENU
+            return SectionState.ROOT
         }
         return telegramState.sectionState
     }

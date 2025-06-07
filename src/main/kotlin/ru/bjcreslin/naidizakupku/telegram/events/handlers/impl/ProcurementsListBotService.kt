@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
+import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 
 @Service("root#list")
@@ -17,6 +18,10 @@ class ProcurementsListBotService (
         val procurements = procurementService.getAllProcurementsForTelegram(user)
         val formattedTable = formatProcurementsAsTable(procurements)
         return formattedTable
+    }
+
+    override fun getSupportedState(): SectionState {
+        return SectionState.ROOT
     }
 
     fun formatProcurementsAsTable(procurements: List<Procurement>): String {

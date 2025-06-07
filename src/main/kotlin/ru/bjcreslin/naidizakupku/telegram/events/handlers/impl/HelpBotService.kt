@@ -2,6 +2,7 @@ package ru.bjcreslin.naidizakupku.telegram.events.handlers.impl
 
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
+import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
 import ru.bjcreslin.naidizakupku.telegramUser.TelegramUserService
 
 @Service("root#help")
@@ -22,5 +23,9 @@ class HelpBotService(
             Если у вас есть вопросы или предложения, пожалуйста, пишите нам. Мы всегда рады помочь!
             Ваша успешная работа с госзакупками начинается здесь!
         """.trimIndent()
+    }
+
+    override fun getSupportedState(): SectionState {
+        return SectionState.ROOT
     }
 }
