@@ -6,7 +6,7 @@ import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
 
 @Service("gigachat#prompt")
-class GigachatHandler(
+class GigachatPromptHandler(
     val gigachatService: GigachatService
 ) : CommandHandler {
     override fun execute(chatId: Long, params: String): String {

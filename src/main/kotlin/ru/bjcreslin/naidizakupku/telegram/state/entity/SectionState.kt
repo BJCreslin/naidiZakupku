@@ -6,4 +6,5 @@ package ru.bjcreslin.naidizakupku.telegram.state.entity
 enum class SectionState(val key: String) {
     ROOT("root"),
     GIGACHAT("gigachat"),
+    ANY("any"),
 }
