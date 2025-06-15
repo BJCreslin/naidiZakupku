@@ -1,10 +1,18 @@
 package ru.bjcreslin.naidizakupku.common
 
+import java.time.LocalDateTime
 import java.util.*
 
 class DateTimeUtils {
 
-    fun getCurrentDate(): Date {
-        return Date()
+    companion object {
+
+        fun getCurrentDate(): Date {
+            return Date()
+        }
+
+        fun getCurrentDateTime(): LocalDateTime {
+            return LocalDateTime.now()
+        }
     }
 }
