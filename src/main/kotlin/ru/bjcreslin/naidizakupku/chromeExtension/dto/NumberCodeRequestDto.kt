@@ -5,6 +5,6 @@ import jakarta.validation.constraints.Min
 
 data class NumberCodeRequestDto(
     @field:Min(1000)
-    @field:Max(9999)
+    @field:Max(999999)
     val numberCode: Int
 )
