@@ -33,6 +33,7 @@ class SecurityConfiguration(
     @Throws(java.lang.Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
+            .cors { it.disable() }
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/health", "/api/health/**").permitAll()

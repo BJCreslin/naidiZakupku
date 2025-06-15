@@ -9,7 +9,7 @@ import ru.bjcreslin.naidizakupku.telegram.state.service.TelegramStateService
 class RootHandler (val telegramStateService: TelegramStateService): CommandHandler{
 
     override fun execute(chatId: Long, params: String): String {
-        telegramStateService.setState(chatId, SectionState.GIGACHAT)
+        telegramStateService.setState(chatId, SectionState.ROOT)
         return "Перехожу в главное меню"
     }
 
