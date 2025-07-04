@@ -14,7 +14,7 @@ class TelegramSectionUser(
     @Column(name = "telegram_id", nullable = false)
     val telegramId: Long,
 
-    /*** Сеуция телеграмм */
+    /*** Секция телеграмм */
     @Enumerated(EnumType.STRING)
     @Column(name = "state", nullable = false)
     var sectionState: SectionState = SectionState.ROOT,

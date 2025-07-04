@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.8.xsd">
+
+    <changeSet id="create-gigachat-session-table" author="BJCreslin">
+        <createTable tableName="gigachat_session">
+
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+
+            <column name="telegram_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+
+            <column name="session_id" type="VARCHAR(255)">
+            </column>
+        </createTable>
+
+        <createIndex
+                indexName="idx_telegram_id"
+                tableName="gigachat_session">
+            <column name="telegram_id"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
