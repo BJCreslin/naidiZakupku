@@ -11,7 +11,7 @@ import ru.bjcreslin.naidizakupku.chromeExtension.service.LoginService
 
 @RestController
 @RequestMapping("admin/login")
-class LoginController(
+class AdminLoginController(
     private val loginService: LoginService
 ) {
 
