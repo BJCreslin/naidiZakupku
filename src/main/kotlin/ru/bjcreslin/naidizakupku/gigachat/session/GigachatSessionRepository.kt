@@ -8,5 +8,5 @@ interface GigachatSessionRepository : JpaRepository<GigachatSession, Long> {
 
     fun deleteAllByTelegramId(telegramId: Long)
 
-    fun findByUserId(userId: Long): GigachatSession?
+    fun findByTelegramId(userId: Long): GigachatSession?
 }

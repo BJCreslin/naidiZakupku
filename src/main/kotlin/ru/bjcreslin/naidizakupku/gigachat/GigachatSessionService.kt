@@ -26,6 +26,6 @@ class GigachatSessionService(private val gigachatSessionRepository: GigachatSess
     @Cacheable(cacheNames = ["gigachatSessionCache"], key = "#user.telegramId")
     fun getSession(user: TelegramUser): GigachatSession? {
         logger.debug("Getting gigachat context for ${user.telegramId}")
-        return gigachatSessionRepository.findByUserId(user.id)
+        return gigachatSessionRepository.findByTelegramId(user.id)
     }
 }
