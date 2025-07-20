@@ -5,11 +5,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 import ru.bjcreslin.naidizakupku.cfg.CodeConfiguration
 import ru.bjcreslin.naidizakupku.cfg.JwtPropertiesConfiguration
+import ru.bjcreslin.naidizakupku.cfg.RateLimiterConfiguration
 import ru.bjcreslin.naidizakupku.cfg.UsersConfiguration
 
 @SpringBootApplication
 @EnableConfigurationProperties(
-    value = [JwtPropertiesConfiguration::class, UsersConfiguration::class, CodeConfiguration::class]
+    value = [JwtPropertiesConfiguration::class, UsersConfiguration::class, CodeConfiguration::class, RateLimiterConfiguration::class]
 )
 class NaidiZakupkuApplication
 
