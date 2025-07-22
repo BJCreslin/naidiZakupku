@@ -44,7 +44,7 @@ class SecurityConfiguration(
                     .requestMatchers("/api/admin/login/**", "/api/admin/login").permitAll()
                     .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasAnyRole("ADMIN")
-                    .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
+                    .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
                     .requestMatchers("/api/chromeExtension/v1/login**").permitAll()
                     .anyRequest().authenticated()
             }
