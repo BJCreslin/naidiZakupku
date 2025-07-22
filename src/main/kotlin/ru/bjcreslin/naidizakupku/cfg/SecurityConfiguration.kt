@@ -38,6 +38,7 @@ class SecurityConfiguration(
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/health", "/api/health/**").permitAll()
                     .requestMatchers("/api/v1/login/**").permitAll()
+                    .requestMatchers("/admin/login/**", "/admin/login").permitAll()
                     .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
                     .requestMatchers("/admin/**").hasAnyRole("ADMIN")
                     .requestMatchers("/user/**").hasAnyRole("USER", "ADMIN")
