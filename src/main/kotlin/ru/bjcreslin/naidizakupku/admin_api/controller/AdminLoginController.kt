@@ -10,7 +10,7 @@ import ru.bjcreslin.naidizakupku.chromeExtension.dto.NumberCodeRequestDto
 import ru.bjcreslin.naidizakupku.chromeExtension.service.LoginService
 
 @RestController
-@RequestMapping("admin/login")
+@RequestMapping("api/admin/login")
 class AdminLoginController(
     private val loginService: LoginService
 ) {
