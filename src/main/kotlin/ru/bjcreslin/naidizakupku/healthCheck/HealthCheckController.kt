@@ -8,6 +8,7 @@ import ru.bjcreslin.naidizakupku.common.DateTimeUtils
 @RestController
 @RequestMapping("api/health")
 class HealthCheckController {
+
     @GetMapping
     fun checkHealth(): HealthResponse {
         return HealthResponse(
