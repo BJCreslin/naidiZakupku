@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 @Repository
-@RepositoryRestResource(path = "users", collectionResourceRel = "users", itemResourceRel = "user")
+@RepositoryRestResource(path = "api/users", collectionResourceRel = "users", itemResourceRel = "user")
 interface UserRepository : JpaRepository<User, Long> {
 
     fun findByUsername(username: String): User?
