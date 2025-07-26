@@ -9,8 +9,8 @@ import org.springframework.stereotype.Component
 @ConfigurationProperties(prefix = "jwt.token")
 @Component
 data class JwtPropertiesConfiguration(
-    var expired: Long = 0,
+    var expired: Long = 3000000,
     var secret: String = "",
     var header: String = "",
-    var bearerPrefix: String = ""
+    var bearerPrefix: String = "Bearer"
 )
