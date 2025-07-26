@@ -11,7 +11,8 @@ class UsersListBotHandler(
 ) : CommandHandler {
 
     override fun execute(chatId: Long, params: String): String {
-        return userRepository.findAll().joinToString("\n") { it.toString() }
+        return userRepository.findAll()
+            .joinToString("\n") { it.username + " ," + it.telegramUser + " ," + it.userRoles.joinToString(", ") }
     }
 
     override fun getSupportedState(): SectionState {
