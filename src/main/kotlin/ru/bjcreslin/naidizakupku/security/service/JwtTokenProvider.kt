@@ -74,21 +74,23 @@ class JwtTokenProvider(
 
     fun validateToken(token: String?): Boolean {
         if (token == null) {
+            logger.error("Token is null")
             throw InvalidTokenException("Token is null")
         }
         try {
             val claims = Jwts.parser()
                 .decryptWith(codeSecret).build()
                 .parseSignedClaims(token)
-            return !claims.payload.expiration.before(Date())
+            logger.info("Token parsed successfully, expiration: ${claims.body.expiration}")
+            return !claims.body.expiration.before(Date())
         } catch (ex: ExpiredJwtException) {
-            logger.error("Token expired: $token")
+            logger.error("Token expired: ${token?.substring(0, 20)}... (hashCode: ${token.hashCode()})")
             throw InvalidTokenException("Token expired")
         } catch (ex: JwtException) {
-            logger.error("Invalid token: $token")
+            logger.error("Invalid token: ${token?.substring(0, 20)}... (hashCode: ${token.hashCode()})")
             throw InvalidTokenException("Invalid token")
         } catch (ex: Exception) {
-            logger.error("Unauthorized request: $token")
+            logger.error("Unauthorized request: ${token?.substring(0, 20)}... (hashCode: ${token.hashCode()})")
             throw UnauthorizedException(ex.toString())
         }
     }
