@@ -12,7 +12,11 @@ class UsersListBotHandler(
 
     override fun execute(chatId: Long, params: String): String {
         return userRepository.findAll()
-            .joinToString("\n") { it.username + " ," + it.telegramUser + " ," + it.userRoles.joinToString(", ") }
+            .joinToString("\n") {
+                "name: " + it.username + " ," + "telegramID: " + it.telegramUser?.telegramId + " ," + it.userRoles.joinToString(
+                    ", "
+                ) { rr -> rr.role.name }
+            }
     }
 
     override fun getSupportedState(): SectionState {
