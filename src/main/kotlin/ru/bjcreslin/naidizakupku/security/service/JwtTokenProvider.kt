@@ -47,7 +47,7 @@ class JwtTokenProvider(
             .issuedAt(currentDate)
             .add("role", roles)
             .and()
-            .encryptWith(codeSecret, Jwts.ENC.A256GCM)  // Use encryptWith instead of signWith
+            .signWith(codeSecret)
             .compact()
     }
 
