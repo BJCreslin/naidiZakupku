@@ -83,7 +83,7 @@ class JwtTokenProvider(
         } catch (ex: JwtException) {
             throw InvalidTokenException("Invalid token")
         } catch (ex: Exception) {
-            throw UnauthorizedException("Unauthorized")
+            throw UnauthorizedException(ex.toString())
         }
     }
 }
