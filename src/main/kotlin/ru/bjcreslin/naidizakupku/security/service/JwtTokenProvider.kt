@@ -47,7 +47,7 @@ class JwtTokenProvider(
             .issuedAt(currentDate)
             .add("role", roles)
             .and()
-            .signWith(codeSecret)
+            .encryptWith(codeSecret, Jwts.ENC.A256GCM)  // Use encryptWith instead of signWith
             .compact()
     }
 
@@ -58,10 +58,10 @@ class JwtTokenProvider(
 
     fun getUsername(token: String?): String {
         return Jwts.parser()
-            .decryptWith(codeSecret).build()
+            .verifyWith(codeSecret).build()  // Changed from decryptWith to verifyWith
             .parseSignedClaims(token)
             .payload
-            .subject;
+            .subject
     }
 
     fun resolveToken(req: HttpServletRequest): String? {
@@ -79,18 +79,18 @@ class JwtTokenProvider(
         }
         try {
             val claims = Jwts.parser()
-                .decryptWith(codeSecret).build()
+                .verifyWith(codeSecret).build()  // Changed from decryptWith to verifyWith
                 .parseSignedClaims(token)
             logger.info("Token parsed successfully, expiration: ${claims.body.expiration}")
             return !claims.body.expiration.before(Date())
         } catch (ex: ExpiredJwtException) {
-            logger.error("Token expired: ${token?.substring(0, 20)}... (hashCode: ${token.hashCode()})")
+            logger.error("Token expired: ${token.substring(0, 20)}... (hashCode: ${token.hashCode()})")
             throw InvalidTokenException("Token expired")
         } catch (ex: JwtException) {
-            logger.error("Invalid token: ${token?.substring(0, 20)}... (hashCode: ${token.hashCode()})")
+            logger.error("Invalid token: ${token.substring(0, 20)}... (hashCode: ${token.hashCode()})")
             throw InvalidTokenException("Invalid token")
         } catch (ex: Exception) {
-            logger.error("Unauthorized request: ${token?.substring(0, 20)}... (hashCode: ${token.hashCode()})")
+            logger.error("Unauthorized request: ${token.substring(0, 20)}... (hashCode: ${token.hashCode()})")
             throw UnauthorizedException(ex.toString())
         }
     }
