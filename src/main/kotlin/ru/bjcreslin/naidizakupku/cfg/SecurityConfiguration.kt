@@ -42,11 +42,6 @@ class SecurityConfiguration(
                     .requestMatchers("/api/health", "/api/health/**").permitAll()
                     .requestMatchers("/api/v1/login/**").permitAll()
                     .requestMatchers("/api/admin/login/**", "/api/admin/login").permitAll()
-//                    .requestMatchers(HttpMethod.DELETE).hasRole("ADMIN")
-//                    .requestMatchers("/admin/**").hasAnyRole("ADMIN")
-//                    .requestMatchers("/api/user/**").hasAnyRole("USER", "ADMIN")
-//                    .requestMatchers("/api/users/**").authenticated()
-//                    .requestMatchers("/api/chromeExtension/v1/login**").permitAll()
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())

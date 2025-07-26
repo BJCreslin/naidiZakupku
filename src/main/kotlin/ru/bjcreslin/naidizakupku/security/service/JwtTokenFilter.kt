@@ -41,6 +41,7 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
             }
         } catch (e: Exception) {
             SecurityContextHolder.clearContext()
+            logger.error("Error processing JWT token", e)
             throw e
         }
 
