@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
 import jakarta.servlet.http.HttpServletRequest
+import org.slf4j.LoggerFactory
 import org.springframework.boot.context.event.ApplicationReadyEvent
 import org.springframework.context.event.EventListener
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
@@ -24,6 +25,8 @@ class JwtTokenProvider(
     private val jwtPropertiesConfiguration: JwtPropertiesConfiguration,
     private val userDetailsService: UserDetailsService
 ) {
+
+    private val logger = LoggerFactory.getLogger(JwtTokenProvider::class.java)
 
     private lateinit var codeSecret: SecretKey
 
@@ -79,10 +82,13 @@ class JwtTokenProvider(
                 .parseSignedClaims(token)
             return !claims.payload.expiration.before(Date())
         } catch (ex: ExpiredJwtException) {
+            logger.error("Token expired: $token")
             throw InvalidTokenException("Token expired")
         } catch (ex: JwtException) {
+            logger.error("Invalid token: $token")
             throw InvalidTokenException("Invalid token")
         } catch (ex: Exception) {
+            logger.error("Unauthorized request: $token")
             throw UnauthorizedException(ex.toString())
         }
     }
