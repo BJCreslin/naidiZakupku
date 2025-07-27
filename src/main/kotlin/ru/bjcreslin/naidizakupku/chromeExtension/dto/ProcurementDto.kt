@@ -1,6 +1,8 @@
 package ru.bjcreslin.naidizakupku.chromeExtension.dto
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import jakarta.validation.constraints.NotBlank
+import ru.bjcreslin.naidizakupku.common.deserializer.BigDecimalWithSpaceDeserializer
 import java.math.BigDecimal
 
 data class ProcurementDto(
@@ -20,5 +22,6 @@ data class ProcurementDto(
     @field:NotBlank(message = "Publisher must not be blank")
     val publisher: String,
 
+    @JsonDeserialize(using = BigDecimalWithSpaceDeserializer::class)
     val price: BigDecimal,
 )
