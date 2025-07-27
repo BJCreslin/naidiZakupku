@@ -40,7 +40,7 @@ class SecurityConfiguration(
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/health", "/api/health/**").permitAll()
-                    .requestMatchers("/api/v1/login/**").permitAll()
+                    .requestMatchers("/api/v1/login/**","/api/v1/verify-token/**").permitAll()
                     .requestMatchers("/api/admin/login/**", "/api/admin/login").permitAll()
                     .anyRequest().authenticated()
             }
