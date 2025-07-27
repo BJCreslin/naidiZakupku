@@ -14,8 +14,8 @@ class BigDecimalWithSpaceDeserializer : JsonDeserializer<BigDecimal>() {
         p: JsonParser?,
         ctxt: DeserializationContext?
     ): BigDecimal? {
-        if (ctxt == null) return null
-        val numberString = p!!.text.replace(" ", "").replace(",", ".")
+        if (ctxt == null || p == null || p.text == null || p.text.isEmpty()) return null
+        val numberString = p.text.replace(" ", "").replace(",", ".")
         return BigDecimal(numberString)
     }
 }
