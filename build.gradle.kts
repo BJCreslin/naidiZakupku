@@ -70,7 +70,8 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-//    compileOnly("org.springframework.boot:spring-boot-starter-tomcat")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    implementation("io.micrometer:micrometer-registry-prometheus")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

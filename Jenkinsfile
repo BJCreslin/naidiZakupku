@@ -95,6 +95,7 @@ pipeline {
                         -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="${NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN}" \\
                         -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
                         -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
+                        --network monitoring-network \\
                         -p ${PORT}:${PORT} ${IMAGE_NAME}
                 """
             }
