@@ -4,8 +4,8 @@ import com.fasterxml.jackson.dataformat.xml.XmlMapper
 import org.springframework.boot.web.client.RestTemplateBuilder
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.common.DateTimeUtils
-import ru.bjcreslin.naidizakupku.news.NewsItem
-import ru.bjcreslin.naidizakupku.news.Rss
+import ru.bjcreslin.naidizakupku.news.dto.NewsItem
+import ru.bjcreslin.naidizakupku.news.dto.Rss
 import java.time.LocalDate
 
 @Service

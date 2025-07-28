@@ -1,17 +1,17 @@
-package ru.bjcreslin.naidizakupku.news
+package ru.bjcreslin.naidizakupku.news.controller
 
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.bjcreslin.naidizakupku.news.dbo.News
-import ru.bjcreslin.naidizakupku.news.repository.NewsRepository
+import ru.bjcreslin.naidizakupku.news.service.NewsService
 
 @RestController
 @RequestMapping("api/news")
-class NewsController(val repository: NewsRepository) {
+class NewsController(val newsService: NewsService) {
 
-    @GetMapping
+    @GetMapping("top")
     fun getNews(): List<News> {
-        return repository.findTop10ByOrderByPublicationDateDesc()
+        return newsService.getTopNews()
     }
 }

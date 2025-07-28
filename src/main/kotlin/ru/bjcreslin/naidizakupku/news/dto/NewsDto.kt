@@ -1,4 +1,4 @@
-package ru.bjcreslin.naidizakupku.news
+package ru.bjcreslin.naidizakupku.news.dto
 
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlElementWrapper
 import com.fasterxml.jackson.dataformat.xml.annotation.JacksonXmlProperty
