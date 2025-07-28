@@ -2,7 +2,6 @@ package ru.bjcreslin.naidizakupku.cfg
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.http.HttpMethod
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -40,8 +39,9 @@ class SecurityConfiguration(
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/health", "/api/health/**").permitAll()
-                    .requestMatchers("/api/v1/login/**","/api/v1/verify-token/**").permitAll()
+                    .requestMatchers("/api/v1/login/**", "/api/v1/verify-token/**").permitAll()
                     .requestMatchers("/api/admin/login/**", "/api/admin/login").permitAll()
+                    .requestMatchers("/api/news/**").permitAll()
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())
