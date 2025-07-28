@@ -59,6 +59,7 @@ dependencies {
     implementation("io.jsonwebtoken:jjwt-jackson:$jsonwebtoken")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
     implementation("com.h2database:h2")
