@@ -12,26 +12,37 @@ import java.util.*
 @JacksonXmlRootElement(localName = "rss")
 data class Rss(
     @JacksonXmlProperty(localName = "channel")
-    val channel: Channel? = null
+    var channel: Channel? = null
 )
 
 data class Channel(
-    val title: String? = null,
-    val link: String? = null,
-    val description: String? = null,
+    @JacksonXmlProperty(localName = "title")
+    var title: String? = null,
+
+    @JacksonXmlProperty(localName = "link")
+    var link: String? = null,
+
+    @JacksonXmlProperty(localName = "description")
+    var description: String? = null,
 
     @JacksonXmlElementWrapper(useWrapping = false)
     @JacksonXmlProperty(localName = "item")
-    val items: List<NewsItem> = emptyList()
+    var items: List<NewsItem> = emptyList()
 )
 
 data class NewsItem(
-    val title: String? = null,
-    val link: String? = null,
-    val description: String? = null,
-    val pubDate: String? = null
-)
-{
+    @JacksonXmlProperty(localName = "title")
+    var title: String? = null,
+
+    @JacksonXmlProperty(localName = "link")
+    var link: String? = null,
+
+    @JacksonXmlProperty(localName = "description")
+    var description: String? = null,
+
+    @JacksonXmlProperty(localName = "pubDate")
+    var pubDate: String? = null
+) {
     val publishedAt: LocalDateTime?
         get() = parsePubDateToMoscow(pubDate)
 }
