@@ -42,6 +42,7 @@ class SecurityConfiguration(
                     .requestMatchers("/api/v1/login/**", "/api/v1/verify-token/**").permitAll()
                     .requestMatchers("/api/admin/login/**", "/api/admin/login").permitAll()
                     .requestMatchers("/api/news/**").permitAll()
+                    .requestMatchers("admin/common/**").permitAll()
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())
