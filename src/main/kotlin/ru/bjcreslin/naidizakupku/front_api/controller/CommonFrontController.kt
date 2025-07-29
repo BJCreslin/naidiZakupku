@@ -8,7 +8,8 @@ import ru.bjcreslin.naidizakupku.front_api.service.CommonFrontService
 
 @RestController
 @RequestMapping("admin/common")
-class CommonFrontController(val commonFrontService: CommonFrontService) {
+class CommonFrontController(
+    private val commonFrontService: CommonFrontService) {
 
     @GetMapping("info")
     fun getInfo(): ProjectInfoDto {
