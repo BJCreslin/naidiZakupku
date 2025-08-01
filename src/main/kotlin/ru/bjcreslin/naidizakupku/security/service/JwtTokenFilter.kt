@@ -17,9 +17,9 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
         AntPathRequestMatcher("/api/v1/login/**"),
         AntPathRequestMatcher("/api/v1//verify-token/**"),
         AntPathRequestMatcher("/api/chromeExtension/v1/login**"),
-        AntPathRequestMatcher("/api/news**"),
-        AntPathRequestMatcher("/admin/common**"),
-        AntPathRequestMatcher("/h2-console**")
+        AntPathRequestMatcher("/api/news/**"),
+        AntPathRequestMatcher("/admin/common/**"),
+        AntPathRequestMatcher("/h2-console/**")
     )
 
     override fun doFilterInternal(
