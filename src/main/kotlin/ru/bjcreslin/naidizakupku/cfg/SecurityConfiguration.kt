@@ -7,12 +7,13 @@ import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
-import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer
 import org.springframework.security.config.http.SessionCreationPolicy
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.security.web.SecurityFilterChain
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
@@ -22,43 +23,65 @@ import ru.bjcreslin.naidizakupku.security.service.JwtTokenFilter
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration(
-    val jwtTokenFilter: JwtTokenFilter
+    private val jwtTokenFilter: JwtTokenFilter
 ) {
 
     @Bean
-    @Throws(Exception::class)
-    fun authenticationManagerBean(authenticationConfiguration: AuthenticationConfiguration): AuthenticationManager {
+    fun authenticationManagerBean(
+        authenticationConfiguration: AuthenticationConfiguration
+    ): AuthenticationManager {
         return authenticationConfiguration.authenticationManager
     }
 
     @Bean
-    @Throws(java.lang.Exception::class)
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
-        http.csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
-            .cors(Customizer.withDefaults())
-            .headers { headers ->
-                headers.frameOptions { it.sameOrigin() } // 💡 нужно для h2
+        http
+            // ✅ CSRF разрешён, но H2 игнорирует его
+            .csrf { csrf ->
+                csrf.ignoringRequestMatchers(AntPathRequestMatcher("/h2-console/**"))
             }
-            .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
-                authorizationManagerRequestMatcherRegistry
-                    .requestMatchers("/api/health", "/api/health/**").permitAll()
-                    .requestMatchers("/api/v1/login/**", "/api/v1/verify-token/**").permitAll()
-                    .requestMatchers("/api/admin/login/**", "/api/admin/login").permitAll()
-                    .requestMatchers("/api/news/**").permitAll()
-                    .requestMatchers("/admin/common/**").permitAll()
-                    .requestMatchers("/h2-console/**").permitAll()
+
+            // ✅ H2 требует разрешения iframe
+            .headers { headers ->
+                headers.frameOptions { it.sameOrigin() }
+            }
+
+            .cors(Customizer.withDefaults())
+
+            .authorizeHttpRequests { auth ->
+                auth
+                    .requestMatchers(
+                        "/api/health", "/api/health/**",
+                        "/api/v1/login/**", "/api/v1/verify-token/**",
+                        "/api/admin/login/**", "/api/admin/login",
+                        "/api/news/**", "/admin/common/**",
+                        "/h2-console/**"
+                    ).permitAll()
                     .anyRequest().authenticated()
             }
+
             .httpBasic(Customizer.withDefaults())
-            .sessionManagement { session ->
-                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
+
+            // ✅ Stateless для всех, кроме H2 (она исключена через webSecurityCustomizer)
+            .sessionManagement {
+                it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
+
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+
         return http.build()
     }
 
+    // ✅ Исключаем H2 Console полностью из Spring Security
     @Bean
-    protected fun passwordEncoder(): PasswordEncoder {
+    fun webSecurityCustomizer(): WebSecurityCustomizer {
+        return WebSecurityCustomizer { web ->
+            web.ignoring().requestMatchers("/h2-console/**")
+        }
+    }
+
+    @Bean
+    fun passwordEncoder(): PasswordEncoder {
         return BCryptPasswordEncoder(12)
     }
 
@@ -76,5 +99,4 @@ class SecurityConfiguration(
         source.registerCorsConfiguration("/**", configuration)
         return source
     }
-
 }
