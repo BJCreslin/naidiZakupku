@@ -50,10 +50,8 @@ class SecurityConfiguration(
                     .anyRequest().authenticated()
             }
             .httpBasic(Customizer.withDefaults())
-            .sessionManagement { httpSecuritySessionManagementConfigurer ->
-                httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
-                    SessionCreationPolicy.STATELESS
-                )
+            .sessionManagement { session ->
+                session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED)
             }
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
         return http.build()
