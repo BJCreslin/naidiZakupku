@@ -16,7 +16,8 @@ class News(
     @Column(name = "publication_date")
     var publicationDate: LocalDateTime?,
 
-    @Column(name = "content", columnDefinition = "TEXT")
+    @Lob
+    @Column(name = "content", columnDefinition = "CLOB")
     var content: String?,
 
     @Enumerated(EnumType.STRING)
