@@ -36,6 +36,9 @@ class SecurityConfiguration(
     fun filterChain(http: HttpSecurity): SecurityFilterChain {
         http.csrf { obj: AbstractHttpConfigurer<*, *> -> obj.disable() }
             .cors(Customizer.withDefaults())
+            .headers { headers ->
+                headers.frameOptions { it.sameOrigin() } // 💡 нужно для h2
+            }
             .authorizeHttpRequests { authorizationManagerRequestMatcherRegistry ->
                 authorizationManagerRequestMatcherRegistry
                     .requestMatchers("/api/health", "/api/health/**").permitAll()
