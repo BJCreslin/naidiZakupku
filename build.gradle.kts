@@ -10,12 +10,12 @@ plugins {
 }
 
 noArg {
-    annotation("javax.persistence.Entity")
+    annotation("jakarta.persistence.Entity")
 }
 
 
 allOpen {
-    annotation("javax.persistence.Entity")
+    annotation("jakarta.persistence.Entity")
 }
 
 group = "ru.bjcreslin"
@@ -72,7 +72,6 @@ dependencies {
     kapt("org.mapstruct:mapstruct-processor:${mapstruct}")
 
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("org.springframework.boot:spring-boot-starter-actuator")
     implementation("io.micrometer:micrometer-registry-prometheus")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
