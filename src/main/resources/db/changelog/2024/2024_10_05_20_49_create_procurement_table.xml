@@ -6,15 +6,15 @@
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.27.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
-    <changeSet id="1728136176357-1" author="Владимир (generated)">
+    <changeSet id="1728136176357-1" author="Владимир">
         <createTable tableName="procurements">
             <column autoIncrement="true" name="id" type="BIGINT">
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_procurements"/>
             </column>
-            <column name="created_at" type="DATETIME">
+            <column name="created_at" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_at" type="DATETIME"/>
+            <column name="updated_at" type="TIMESTAMP"/>
             <column name="created_by" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -27,7 +27,7 @@
                 <constraints nullable="false"/>
             </column>
             <column name="registry_number" type="VARCHAR(255)">
-                <constraints nullable="false"/>
+                <constraints nullable="false" unique="true"/>
             </column>
             <column name="name" type="VARCHAR(255)">
                 <constraints nullable="false"/>
@@ -39,33 +39,33 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1728136176357-2" author="Владимир (generated)">
+    <changeSet id="2025_08_02_0001_create_user_procurement" author="Владимир">
         <createTable tableName="user_procurement">
             <column name="procurement_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_procurement"/>
+                <constraints nullable="false"/>
             </column>
             <column name="user_id" type="BIGINT">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_user_procurement"/>
+                <constraints nullable="false"/>
             </column>
         </createTable>
-    </changeSet>
 
-    <changeSet id="1728136176357-3" author="Владимир (generated)">
-        <createIndex indexName="idx_registry_number" tableName="procurements" unique="true">
-            <column name="registry_number"/>
-        </createIndex>
-    </changeSet>
+        <addPrimaryKey columnNames="procurement_id,user_id"
+                       constraintName="pk_user_procurement"
+                       tableName="user_procurement"/>
 
-    <changeSet id="1728136176357-4" author="Владимир (generated)">
-        <addForeignKeyConstraint baseColumnNames="procurement_id" baseTableName="user_procurement"
-                                 constraintName="fk_usepro_on_procurement" referencedColumnNames="id"
-                                 referencedTableName="procurements"/>
-    </changeSet>
+        <addForeignKeyConstraint baseColumnNames="procurement_id"
+                                 baseTableName="user_procurement"
+                                 constraintName="fk_userprocurement_procurement"
+                                 referencedTableName="procurements"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
 
-    <changeSet id="1728136176357-5" author="Владимир (generated)">
-        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_procurement"
-                                 constraintName="fk_usepro_on_user" referencedColumnNames="id"
-                                 referencedTableName="users"/>
+        <addForeignKeyConstraint baseColumnNames="user_id"
+                                 baseTableName="user_procurement"
+                                 constraintName="fk_userprocurement_user"
+                                 referencedTableName="users"
+                                 referencedColumnNames="id"
+                                 onDelete="CASCADE"/>
     </changeSet>
 
 </databaseChangeLog>

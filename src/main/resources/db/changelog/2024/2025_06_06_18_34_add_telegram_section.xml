@@ -9,8 +9,8 @@
 
         <createTable tableName="telegram_section_user">
 
-            <column name="id" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="id" type="BIGINT" autoIncrement="true">
+                <constraints primaryKey="true" nullable="false" primaryKeyName="pk_telegram_section_user"/>
             </column>
 
             <column name="telegram_id" type="BIGINT">

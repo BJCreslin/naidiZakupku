@@ -37,6 +37,7 @@ val jsonwebtoken = "0.12.6"
 val telegrambots = "6.9.7.1"
 val mapstruct = "1.6.3"
 val gigachat = "0.1.7"
+val postgreSQL = "42.7.3"
 
 dependencies {
     implementation(enforcedPlatform("org.springframework.boot:spring-boot-dependencies:3.4.5"))
@@ -62,7 +63,7 @@ dependencies {
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
     implementation("org.liquibase:liquibase-core")
     implementation("org.telegram:telegrambots-spring-boot-starter:$telegrambots")
-    implementation("com.h2database:h2")
+    implementation("org.postgresql:postgresql:${postgreSQL}")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("chat.giga:gigachat-java:${gigachat}")
 

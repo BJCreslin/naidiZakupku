@@ -7,15 +7,16 @@
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
 
     <changeSet id="2024_09_15_21_42_pump_roles" author="Владимир">
-        <comment>Добавил начальное заполенение ролей</comment>
+        <comment>Добавил начальное заполнение ролей</comment>
+
         <insert tableName="roles">
-            <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="created_by" value="System"/>
             <column name="name" value="Admin"/>
         </insert>
 
         <insert tableName="roles">
-            <column name="created_at" valueDate="CURRENT_TIMESTAMP"/>
+            <column name="created_at" valueComputed="CURRENT_TIMESTAMP"/>
             <column name="created_by" value="System"/>
             <column name="name" value="User"/>
         </insert>
