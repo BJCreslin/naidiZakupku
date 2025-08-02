@@ -16,7 +16,6 @@ class News(
     @Column(name = "publication_date")
     var publicationDate: LocalDateTime?,
 
-    @Lob
     @Column(name = "content", columnDefinition = "CLOB")
     var content: String?,
 
