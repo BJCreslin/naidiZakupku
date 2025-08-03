@@ -14,11 +14,11 @@ class LoginServiceImpl(
 ) : LoginService {
 
     override fun login(codeRequest: NumberCodeRequestDto): String {
-        if (codeRequest.numberCode == 1000) {
+        if (codeRequest.getNumberCode() == 1000) {
             return jwtTokenProvider.createAccessToken("TelegramUser287016568", listOf("user", "admin"))
         }
 
-        val user = telegramCodeService.getUserByCode(codeRequest.numberCode)
+        val user = telegramCodeService.getUserByCode(codeRequest.getNumberCode())
             ?: throw BadRequestException("User not found")
         return jwtTokenProvider.createAccessToken(
             user.username,
