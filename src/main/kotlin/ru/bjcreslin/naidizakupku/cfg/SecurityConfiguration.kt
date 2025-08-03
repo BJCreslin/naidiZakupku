@@ -36,6 +36,7 @@ class SecurityConfiguration(
         http
 
             .cors(Customizer.withDefaults())
+            .csrf { it.disable() }
 
             .authorizeHttpRequests { auth ->
                 auth
