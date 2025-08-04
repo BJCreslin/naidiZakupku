@@ -7,7 +7,7 @@ import ru.bjcreslin.naidizakupku.front_api.dto.ProjectInfoDto
 import ru.bjcreslin.naidizakupku.front_api.service.CommonFrontService
 
 @RestController
-@RequestMapping("admin/common")
+@RequestMapping("api/common")
 class CommonFrontController(
     private val commonFrontService: CommonFrontService) {
 
