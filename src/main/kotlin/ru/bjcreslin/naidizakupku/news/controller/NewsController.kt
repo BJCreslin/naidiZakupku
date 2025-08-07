@@ -1,5 +1,6 @@
 package ru.bjcreslin.naidizakupku.news.controller
 
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -14,7 +15,7 @@ class NewsController(
     val newsMapper: NewsMapper
 ) {
 
-    @GetMapping("top", produces = ["application/json"])
+    @GetMapping("top", produces = [MediaType.APPLICATION_JSON_VALUE])
     fun getNews(): List<NewsResponseDto> {
         return newsMapper.toDtoList(newsService.getTopNews())
     }

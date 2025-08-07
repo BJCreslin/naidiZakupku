@@ -1,5 +1,6 @@
 package ru.bjcreslin.naidizakupku.healthCheck
 
+import org.springframework.http.MediaType
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
@@ -9,7 +10,7 @@ import ru.bjcreslin.naidizakupku.common.DateTimeUtils
 @RequestMapping("api/health")
 class HealthCheckController {
 
-    @GetMapping
+    @GetMapping(produces = [MediaType.APPLICATION_JSON_VALUE])
     fun checkHealth(): HealthResponse {
         return HealthResponse(
             status = ServerStatus.UP,

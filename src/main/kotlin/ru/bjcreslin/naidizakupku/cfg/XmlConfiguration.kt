@@ -39,11 +39,12 @@ class MessageConverterConfiguration : WebMvcConfigurer {
     }
 
     override fun configureMessageConverters(converters: MutableList<HttpMessageConverter<*>>) {
-        // Add JSON converter first (higher priority)
+        // Add JSON converter first (higher priority) - this makes JSON the default
         val jsonConverter = MappingJackson2HttpMessageConverter(objectMapper())
         jsonConverter.supportedMediaTypes = listOf(
             MediaType.APPLICATION_JSON,
-            MediaType("application", "*+json")
+            MediaType("application", "*+json"),
+            MediaType.ALL // This ensures JSON is used when no specific content type is requested
         )
         converters.add(jsonConverter)
 
