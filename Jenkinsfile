@@ -88,16 +88,16 @@ pipeline {
         stage('Run Docker Container') {
             steps {
                 sh """
-                    docker stop ${CONTAINER_NAME} || true
-                    docker rm ${CONTAINER_NAME} || true
-                    docker run -d --name ${CONTAINER_NAME} \\
-                        -v /var/h2data:/data \\
-                        -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="${NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN}" \\
-                        -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
-                        -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
-                        --network monitoring-network \\
-                        -p ${PORT}:${PORT} ${IMAGE_NAME} \\
-                        --add-host=host.docker.internal:host-gateway
+                           docker stop ${CONTAINER_NAME} || true
+                           docker rm ${CONTAINER_NAME} || true
+                           docker run -d --name ${CONTAINER_NAME} \\
+                               -v /var/h2data:/data \\
+                               -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="${NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN}" \\
+                               -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
+                               -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
+                               --network monitoring-network \\
+                               --add-host=host.docker.internal:host-gateway \\
+                               -p ${PORT}:${PORT} ${IMAGE_NAME}
                 """
             }
         }
