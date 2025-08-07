@@ -96,7 +96,8 @@ pipeline {
                         -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
                         -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
                         --network monitoring-network \\
-                        -p ${PORT}:${PORT} ${IMAGE_NAME}
+                        -p ${PORT}:${PORT} ${IMAGE_NAME} \\
+                        --add-host=host.docker.internal:host-gateway
                 """
             }
         }
