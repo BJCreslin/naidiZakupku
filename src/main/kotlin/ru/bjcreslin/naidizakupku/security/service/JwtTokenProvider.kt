@@ -19,11 +19,12 @@ import ru.bjcreslin.naidizakupku.security.exceptions.UnauthorizedException
 import java.nio.charset.StandardCharsets
 import java.util.*
 import javax.crypto.SecretKey
+import org.springframework.context.annotation.Lazy
 
 @Component
 class JwtTokenProvider(
     private val jwtPropertiesConfiguration: JwtPropertiesConfiguration,
-    private val userDetailsService: UserDetailsService
+    @Lazy private val userDetailsService: UserDetailsService
 ) {
 
     private val logger = LoggerFactory.getLogger(JwtTokenProvider::class.java)

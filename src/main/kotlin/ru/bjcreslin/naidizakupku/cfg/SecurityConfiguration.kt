@@ -16,12 +16,16 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import ru.bjcreslin.naidizakupku.security.service.JwtTokenFilter
+import org.springframework.context.annotation.Lazy
+import org.springframework.security.core.userdetails.UserDetailsService
+import org.springframework.stereotype.Component
+import ru.bjcreslin.naidizakupku.cfg.JwtPropertiesConfiguration
 
 
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration(
-    private val jwtTokenFilter: JwtTokenFilter
+    @Lazy private val jwtTokenFilter: JwtTokenFilter
 ) {
 
     @Bean
