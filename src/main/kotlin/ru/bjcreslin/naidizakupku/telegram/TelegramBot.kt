@@ -1,3 +1,4 @@
+@file:Suppress("DEPRECATION")
 package ru.bjcreslin.naidizakupku.telegram
 
 import org.slf4j.Logger
@@ -47,7 +48,7 @@ class TelegramBot(
                 String.format(
                     TelegramBotServiceException.ERROR_SEND_MESSAGE,
                     it.chatId,
-                    it.text ?: "<empty>"
+                    it.text
                 )
             }
             throw TelegramBotServiceException(eMessage, ex)
