@@ -1,6 +1,8 @@
 package ru.bjcreslin.naidizakupku.healthCheck
 
 import io.micrometer.core.instrument.MeterRegistry
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -10,6 +12,7 @@ import java.lang.management.ManagementFactory
 import java.lang.management.MemoryMXBean
 import java.lang.management.ThreadMXBean
 import java.time.LocalDateTime
+import jakarta.persistence.EntityManagerFactory
 
 @RestController
 @RequestMapping("/api/health")
@@ -18,15 +21,21 @@ class HealthCheckController(
     private val customMetricsService: CustomMetricsService
 ) {
 
+    @Autowired
+    private lateinit var applicationContext: ApplicationContext
+
     @GetMapping
     fun health(): ResponseEntity<ServerStatusResponse> {
+        val entityManagerStatus = checkEntityManagerStatus()
+        
         val status = ServerStatusResponse(
-            status = "UP",
+            status = if (entityManagerStatus.isOpen) "UP" else "DOWN",
             timestamp = LocalDateTime.now(),
             uptime = getUptime(),
             memory = getMemoryInfo(),
             threads = getThreadInfo(),
-            metrics = getBasicMetrics()
+            metrics = getBasicMetrics(),
+            databaseStatus = entityManagerStatus
         )
         
         return ResponseEntity.ok(status)
@@ -36,9 +45,10 @@ class HealthCheckController(
     fun detailedHealth(): ResponseEntity<DetailedServerStatus> {
         val memoryBean = ManagementFactory.getMemoryMXBean()
         val threadBean = ManagementFactory.getThreadMXBean()
+        val entityManagerStatus = checkEntityManagerStatus()
         
         val detailedStatus = DetailedServerStatus(
-            status = "UP",
+            status = if (entityManagerStatus.isOpen) "UP" else "DOWN",
             timestamp = LocalDateTime.now(),
             uptime = getUptime(),
             memory = DetailedMemoryInfo(
@@ -58,10 +68,28 @@ class HealthCheckController(
                 freeMemory = Runtime.getRuntime().freeMemory(),
                 maxMemory = Runtime.getRuntime().maxMemory()
             ),
-            metrics = getDetailedMetrics()
+            metrics = getDetailedMetrics(),
+            databaseStatus = entityManagerStatus
         )
         
         return ResponseEntity.ok(detailedStatus)
+    }
+
+    private fun checkEntityManagerStatus(): DatabaseStatus {
+        return try {
+            val entityManagerFactory = applicationContext.getBean(EntityManagerFactory::class.java)
+            DatabaseStatus(
+                isOpen = entityManagerFactory.isOpen,
+                status = if (entityManagerFactory.isOpen) "CONNECTED" else "CLOSED",
+                message = if (entityManagerFactory.isOpen) "EntityManagerFactory is open and ready" else "EntityManagerFactory is closed"
+            )
+        } catch (e: Exception) {
+            DatabaseStatus(
+                isOpen = false,
+                status = "ERROR",
+                message = "Failed to check EntityManagerFactory status: ${e.message}"
+            )
+        }
     }
 
     private fun getUptime(): String {
@@ -113,7 +141,8 @@ data class ServerStatusResponse(
     val uptime: String,
     val memory: String,
     val threads: String,
-    val metrics: Map<String, Any>
+    val metrics: Map<String, Any>,
+    val databaseStatus: DatabaseStatus
 )
 
 data class DetailedServerStatus(
@@ -123,7 +152,14 @@ data class DetailedServerStatus(
     val memory: DetailedMemoryInfo,
     val threads: DetailedThreadInfo,
     val system: SystemInfo,
-    val metrics: Map<String, Any>
+    val metrics: Map<String, Any>,
+    val databaseStatus: DatabaseStatus
+)
+
+data class DatabaseStatus(
+    val isOpen: Boolean,
+    val status: String,
+    val message: String
 )
 
 data class DetailedMemoryInfo(

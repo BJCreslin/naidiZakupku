@@ -1,6 +1,8 @@
 package ru.bjcreslin.naidizakupku.news.parsers
 
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.context.ApplicationContext
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
@@ -10,6 +12,7 @@ import ru.bjcreslin.naidizakupku.news.dbo.NewsType
 import ru.bjcreslin.naidizakupku.news.repository.NewsRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
+import jakarta.persistence.EntityManagerFactory
 
 @Service
 class NewsParsingService(
@@ -22,10 +25,20 @@ class NewsParsingService(
 
     private val baseUrl = "https://zakupki.gov.ru"
 
+    @Autowired
+    private lateinit var applicationContext: ApplicationContext
+
     @Scheduled(fixedRate = 3_600_000) // Каждый час
     @Transactional
     fun parseNews() {
         try {
+            // Проверяем состояние EntityManagerFactory
+            val entityManagerFactory = applicationContext.getBean(EntityManagerFactory::class.java)
+            if (entityManagerFactory.isOpen.not()) {
+                logger.warn("EntityManagerFactory is closed, skipping news parsing")
+                return
+            }
+
             logger.info("Starting news parsing...")
 
             val newsItems = rssService.loadNews(LocalDate.now().minusDays(20))
@@ -44,6 +57,14 @@ class NewsParsingService(
             val savedCount = saveNewNews(newNewsItems)
 
             logger.info("Parsing completed. Saved $savedCount new items")
+        } catch (e: org.springframework.transaction.CannotCreateTransactionException) {
+            logger.error("Cannot create transaction for news parsing - EntityManagerFactory may be closed", e)
+        } catch (e: java.lang.IllegalStateException) {
+            if (e.message?.contains("EntityManagerFactory is closed") == true) {
+                logger.warn("EntityManagerFactory is closed, skipping news parsing")
+            } else {
+                logger.error("IllegalStateException during news parsing", e)
+            }
         } catch (e: Exception) {
             logger.error("Error during news parsing", e)
         }
