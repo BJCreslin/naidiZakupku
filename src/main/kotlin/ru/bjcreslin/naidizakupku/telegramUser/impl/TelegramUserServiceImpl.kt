@@ -2,6 +2,8 @@ package ru.bjcreslin.naidizakupku.telegramUser.impl
 
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.cfg.UsersConfiguration
 import ru.bjcreslin.naidizakupku.security.entity.UserRole
@@ -23,6 +25,7 @@ class TelegramUserServiceImpl(
 
     private val logger: Logger = LoggerFactory.getLogger(TelegramUserServiceImpl::class.java)
 
+    @Cacheable(cacheNames = ["telegramUserCache"], key = "#telegramId")
     override fun getNewOrSavedUserByTelegramId(telegramId: Long): User {
         var telegramUser = telegramUserRepository.findByTelegramId(telegramId)
         val user: User
@@ -34,5 +37,11 @@ class TelegramUserServiceImpl(
             logger.info("User with telegramId $telegramId created")
         }
         return telegramUser.user
+    }
+
+    @CacheEvict(cacheNames = ["telegramUserCache"], key = "#telegramId")
+    fun invalidateUserCache(telegramId: Long) {
+        // Метод для ручной инвалидации кэша пользователя
+        logger.debug("Invalidating cache for user with telegramId: $telegramId")
     }
 }

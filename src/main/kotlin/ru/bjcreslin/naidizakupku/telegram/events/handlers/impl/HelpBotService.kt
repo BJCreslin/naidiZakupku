@@ -1,5 +1,6 @@
 package ru.bjcreslin.naidizakupku.telegram.events.handlers.impl
 
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
@@ -19,6 +20,7 @@ class HelpBotService(
         return SectionState.ROOT
     }
 
+    @Cacheable(cacheNames = ["helpMessageCache"])
     private fun buildHelpMessage(): String {
         return """
             🤖 *Справка по командам бота*

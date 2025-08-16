@@ -1,5 +1,7 @@
 package ru.bjcreslin.naidizakupku.telegram.state.service
 
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
 import ru.bjcreslin.naidizakupku.telegram.state.entity.TelegramSectionUser
@@ -8,6 +10,7 @@ import ru.bjcreslin.naidizakupku.telegram.state.entity.TelegramSectionUserReposi
 @Service
 class TelegramStateServiceImpl(val repository: TelegramSectionUserRepository) : TelegramStateService {
 
+    @Cacheable(cacheNames = ["telegramStateCache"], key = "#chatID")
     override fun getState(chatID: Long): SectionState {
         val telegramState = repository.findByTelegramId(chatID)
         if (telegramState == null) {
@@ -21,6 +24,7 @@ class TelegramStateServiceImpl(val repository: TelegramSectionUserRepository) : 
         return "${telegramState.key}#${messageText.removePrefix("/")}"
     }
 
+    @CacheEvict(cacheNames = ["telegramStateCache"], key = "#chatID")
     override fun setState(
         chatID: Long,
         sectionState: SectionState

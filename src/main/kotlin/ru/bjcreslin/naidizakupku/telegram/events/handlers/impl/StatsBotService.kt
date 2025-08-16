@@ -1,5 +1,7 @@
 package ru.bjcreslin.naidizakupku.telegram.events.handlers.impl
 
+import org.springframework.cache.annotation.CacheEvict
+import org.springframework.cache.annotation.Cacheable
 import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
@@ -12,6 +14,7 @@ class StatsBotService(
     private val procurementService: ProcurementService
 ) : CommandHandler {
 
+    @Cacheable(cacheNames = ["statsCache"], key = "#chatId")
     override fun execute(chatId: Long, params: String): String {
         val user = telegramUserService.getNewOrSavedUserByTelegramId(chatId)
         val procurements = procurementService.getAllProcurementsForTelegram(user)
@@ -71,5 +74,10 @@ class StatsBotService(
         } else {
             "Не указана"
         }
+    }
+
+    @CacheEvict(cacheNames = ["statsCache"], key = "#chatId")
+    fun invalidateUserStats(chatId: Long) {
+        // Метод для инвалидации кэша статистики пользователя
     }
 }

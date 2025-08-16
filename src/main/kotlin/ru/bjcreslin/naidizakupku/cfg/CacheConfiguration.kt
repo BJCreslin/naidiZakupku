@@ -14,7 +14,16 @@ class CacheConfiguration {
     fun cacheManager(): CacheManager = CaffeineCacheManager().apply { 
         setCaffeine(caffeine())
         // Настраиваем кэши с разными параметрами
-        setCacheNames(setOf("ProjectInfoCache", "gigachatSessionCache", "telegramUpdateCache"))
+        setCacheNames(setOf(
+            "ProjectInfoCache", 
+            "gigachatSessionCache", 
+            "telegramUpdateCache",
+            "telegramUserCache",
+            "telegramStateCache",
+            "procurementsListCache",
+            "statsCache",
+            "helpMessageCache"
+        ))
     }
 
     private fun caffeine() =

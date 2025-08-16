@@ -35,7 +35,12 @@ class CacheConfiguration {
 
 1. **ProjectInfoCache** - кэширование информации о проекте
 2. **gigachatSessionCache** - кэширование сессий GigaChat
-3. **telegramUpdateCache** - дедупликация обновлений Telegram (новый)
+3. **telegramUpdateCache** - дедупликация обновлений Telegram
+4. **telegramUserCache** - кэширование пользователей Telegram
+5. **telegramStateCache** - кэширование состояний пользователей
+6. **procurementsListCache** - кэширование списков закупок
+7. **statsCache** - кэширование статистики пользователей
+8. **helpMessageCache** - кэширование справочных сообщений
 
 ## Дедупликация обновлений Telegram
 
@@ -138,6 +143,38 @@ GET /actuator/caches/telegramUpdateCache
 logging.level.org.springframework.cache=DEBUG
 ```
 
+## Новые возможности кэширования
+
+### Кэширование пользователей Telegram
+```kotlin
+@Cacheable(cacheNames = ["telegramUserCache"], key = "#telegramId")
+fun getNewOrSavedUserByTelegramId(telegramId: Long): User
+```
+
+### Кэширование состояний пользователей
+```kotlin
+@Cacheable(cacheNames = ["telegramStateCache"], key = "#chatID")
+fun getState(chatID: Long): SectionState
+```
+
+### Кэширование статистики
+```kotlin
+@Cacheable(cacheNames = ["statsCache"], key = "#chatId")
+fun execute(chatId: Long, params: String): String
+```
+
+### Кэширование справочных сообщений
+```kotlin
+@Cacheable(cacheNames = ["helpMessageCache"])
+private fun buildHelpMessage(): String
+```
+
 ## Заключение
 
-Миграция на Spring Cache упростила код, улучшила производительность и обеспечила единообразное управление кэшированием в приложении. Дедупликация обновлений Telegram теперь работает автоматически с настраиваемым TTL и ограничением по размеру.
+Система кэширования в Telegram боте значительно улучшена:
+- Добавлено кэширование часто запрашиваемых данных
+- Оптимизирована производительность обработки команд
+- Снижена нагрузка на базу данных
+- Обеспечено единообразное управление кэшированием
+
+Все кэши используют единую конфигурацию с автоматическим TTL и ограничением по размеру.

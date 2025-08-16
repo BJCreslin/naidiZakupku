@@ -56,6 +56,21 @@ GET http://localhost:9000/actuator/caches
         },
         "telegramUpdateCache": {
           "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
+        },
+        "telegramUserCache": {
+          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
+        },
+        "telegramStateCache": {
+          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
+        },
+        "procurementsListCache": {
+          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
+        },
+        "statsCache": {
+          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
+        },
+        "helpMessageCache": {
+          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
         }
       }
     }
@@ -100,7 +115,7 @@ GET http://localhost:9000/actuator/metrics/cache.evictions
   "availableTags": [
     {
       "tag": "cache",
-      "values": ["ProjectInfoCache", "gigachatSessionCache", "telegramUpdateCache"]
+      "values": ["ProjectInfoCache", "gigachatSessionCache", "telegramUpdateCache", "telegramUserCache", "telegramStateCache", "procurementsListCache", "statsCache", "helpMessageCache"]
     },
     {
       "tag": "cache.manager",
@@ -173,7 +188,39 @@ sum by (cache) (cache_evictions_total)
 - `cache_size{cache="gigachatSessionCache"}` - количество активных сессий
 - `cache_hit_ratio{cache="gigachatSessionCache"}` - эффективность кэширования
 
-### 3. Project Info Cache
+### 3. Telegram User Cache
+
+**Назначение:** Кэширование пользователей Telegram
+
+**Ключевые метрики:**
+- `cache_size{cache="telegramUserCache"}` - количество активных пользователей
+- `cache_hit_ratio{cache="telegramUserCache"}` - эффективность кэширования пользователей
+
+### 4. Telegram State Cache
+
+**Назначение:** Кэширование состояний пользователей
+
+**Ключевые метрики:**
+- `cache_size{cache="telegramStateCache"}` - количество пользователей с состояниями
+- `cache_hit_ratio{cache="telegramStateCache"}` - эффективность кэширования состояний
+
+### 5. Stats Cache
+
+**Назначение:** Кэширование статистики пользователей
+
+**Ключевые метрики:**
+- `cache_size{cache="statsCache"}` - количество кэшированных статистик
+- `cache_hit_ratio{cache="statsCache"}` - эффективность кэширования статистики
+
+### 6. Help Message Cache
+
+**Назначение:** Кэширование справочных сообщений
+
+**Ключевые метрики:**
+- `cache_size{cache="helpMessageCache"}` - обычно 1 запись
+- `cache_hit_ratio{cache="helpMessageCache"}` - должен быть высокий
+
+### 7. Project Info Cache
 
 **Назначение:** Кэширование информации о проекте
 
