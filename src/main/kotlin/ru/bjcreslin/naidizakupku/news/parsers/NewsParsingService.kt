@@ -59,6 +59,12 @@ class NewsParsingService(
             logger.info("Parsing completed. Saved $savedCount new items")
         } catch (e: org.springframework.transaction.CannotCreateTransactionException) {
             logger.error("Cannot create transaction for news parsing - EntityManagerFactory may be closed", e)
+        } catch (e: org.springframework.orm.jpa.JpaSystemException) {
+            if (e.message?.contains("Cannot commit when autoCommit is enabled") == true) {
+                logger.warn("AutoCommit conflict detected, skipping news parsing")
+            } else {
+                logger.error("JpaSystemException during news parsing", e)
+            }
         } catch (e: java.lang.IllegalStateException) {
             if (e.message?.contains("EntityManagerFactory is closed") == true) {
                 logger.warn("EntityManagerFactory is closed, skipping news parsing")
