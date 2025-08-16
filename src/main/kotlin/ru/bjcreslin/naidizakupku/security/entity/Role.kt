@@ -11,7 +11,7 @@ import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
 open class Role(
 
     @Column(name = "name", unique = true, nullable = false)
-    open var name: String,
+    open var name: String = "",
 
     @OneToMany(mappedBy = "role", cascade = [CascadeType.ALL], orphanRemoval = true)
     open var userRoles: MutableList<UserRole> = mutableListOf()

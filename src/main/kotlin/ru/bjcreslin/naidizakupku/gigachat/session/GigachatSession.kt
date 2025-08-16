@@ -15,8 +15,8 @@ open class GigachatSession(
     open var id: Long = 0,
 
     @Column(name = "telegram_id", nullable = false)
-    open var telegramId: Long,
+    open var telegramId: Long = 0,
 
     @Column(name = "session_id")
-    open var sessionId: String
+    open var sessionId: String = ""
 )

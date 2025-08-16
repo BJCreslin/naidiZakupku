@@ -18,22 +18,22 @@ import java.math.BigDecimal
 open class Procurement(
 
     @Column(name = "federal_law_number", nullable = false)
-    open var federalLawNumber: String,
+    open var federalLawNumber: String = "",
 
     @Column(name = "link_placement", nullable = false)
-    open var linkOnPlacement: String,
+    open var linkOnPlacement: String = "",
 
     @Column(name = "registry_number", nullable = false)
-    open var registryNumber: String,
+    open var registryNumber: String = "",
 
     @Column(name = "name", nullable = false)
-    open var name: String,
+    open var name: String = "",
 
     @Column(name = "publisher", nullable = false)
-    open var publisher: String,
+    open var publisher: String = "",
 
     @Column(name = "price")
-    open var price: BigDecimal,
+    open var price: BigDecimal? = null,
 
     @ManyToMany(mappedBy = "procurements", fetch = FetchType.LAZY)
     open var users: MutableSet<User> = HashSet()

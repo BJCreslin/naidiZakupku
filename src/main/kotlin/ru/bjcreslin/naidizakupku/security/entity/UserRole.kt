@@ -13,9 +13,9 @@ open class UserRole(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    open var user: User,
+    open var user: User = User(),
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    open var role: Role
+    open var role: Role = Role()
 ) : BaseEntity()

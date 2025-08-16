@@ -12,7 +12,7 @@ open class TelegramSectionUser(
     open var id: Long = 0,
 
     @Column(name = "telegram_id", nullable = false)
-    open var telegramId: Long,
+    open var telegramId: Long = 0,
 
     /*** Секция телеграмм */
     @Enumerated(EnumType.STRING)

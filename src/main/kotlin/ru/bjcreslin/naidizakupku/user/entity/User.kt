@@ -10,13 +10,13 @@ import ru.bjcreslin.naidizakupku.telegramUser.entity.TelegramUser
 @Table(name = "users")
 open class User(
     @Column(name = "username", unique = true, nullable = false)
-    open var username: String,
+    open var username: String = "",
 
     @Column(name = "password", nullable = true)
-    open var password: String?,
+    open var password: String? = null,
 
     @Column(name = "enabled", nullable = false)
-    open var enabled: Boolean,
+    open var enabled: Boolean = true,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
     open var userRoles: MutableList<UserRole> = mutableListOf(),

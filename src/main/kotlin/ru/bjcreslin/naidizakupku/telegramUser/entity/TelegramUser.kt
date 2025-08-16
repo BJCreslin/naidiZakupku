@@ -10,8 +10,8 @@ open class TelegramUser(
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    open var user: User,
+    open var user: User = User(),
 
     @Column(name = "telegram_id", nullable = false)
-    open var telegramId: Long
+    open var telegramId: Long = 0
 ) : BaseEntity()

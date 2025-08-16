@@ -14,11 +14,11 @@ open class TelegramCodeEntity(
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    open var user: User,
+    open var user: User = User(),
 
     @Column(name = "code", nullable = false)
-    open var code: Int,
+    open var code: Int = 0,
 
     @Column(name = "max_action_time", nullable = false)
-    open var maxActionTime: LocalDateTime
+    open var maxActionTime: LocalDateTime = LocalDateTime.now()
 ) : BaseEntity()
