@@ -15,26 +15,26 @@ import java.math.BigDecimal
     name = "procurements",
     indexes = [Index(name = "idx_registry_number", columnList = "registryNumber", unique = true)]
 )
-class Procurement(
+open class Procurement(
 
     @Column(name = "federal_law_number", nullable = false)
-    val federalLawNumber: String,
+    open var federalLawNumber: String,
 
     @Column(name = "link_placement", nullable = false)
-    val linkOnPlacement: String,
+    open var linkOnPlacement: String,
 
     @Column(name = "registry_number", nullable = false)
-    val registryNumber: String,
+    open var registryNumber: String,
 
     @Column(name = "name", nullable = false)
-    val name: String,
+    open var name: String,
 
     @Column(name = "publisher", nullable = false)
-    val publisher: String,
+    open var publisher: String,
 
     @Column(name = "price")
-    val price: BigDecimal,
+    open var price: BigDecimal,
 
     @ManyToMany(mappedBy = "procurements", fetch = FetchType.LAZY)
-    val users: MutableSet<User> = HashSet()
+    open var users: MutableSet<User> = HashSet()
 ) : BaseEntity()

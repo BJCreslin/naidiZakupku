@@ -6,20 +6,20 @@ import java.time.LocalDateTime
 
 @Entity
 @Table(name = "news")
-class News(
+open class News(
     @Column(name = "title", nullable = false, length = 1000)
-    var title: String?,
+    open var title: String?,
 
     @Column(name = "url", nullable = false, unique = true)
-    var url: String,
+    open var url: String,
 
     @Column(name = "publication_date")
-    var publicationDate: LocalDateTime?,
+    open var publicationDate: LocalDateTime?,
 
     @Column(name = "content", columnDefinition = "CLOB")
-    var content: String?,
+    open var content: String?,
 
     @Enumerated(EnumType.STRING)
     @Column(name = "news_type")
-    var newsType: NewsType = NewsType.GENERAL
+    open var newsType: NewsType = NewsType.GENERAL
 ) : BaseEntity()

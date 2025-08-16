@@ -9,13 +9,13 @@ import ru.bjcreslin.naidizakupku.user.entity.User
  */
 @Entity
 @Table(name = "user_roles")
-class UserRole(
+open class UserRole(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    open var user: User,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "role_id", nullable = false)
-    val role: Role
+    open var role: Role
 ) : BaseEntity()

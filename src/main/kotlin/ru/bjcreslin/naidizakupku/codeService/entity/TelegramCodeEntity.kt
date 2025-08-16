@@ -10,15 +10,15 @@ import java.time.LocalDateTime
     UniqueConstraint(name = "uc_telegram_code_user_id", columnNames = ["user_id"]),
     UniqueConstraint(name = "uc_telegram_code_code", columnNames = ["code"])
 ])
-class TelegramCodeEntity(
+open class TelegramCodeEntity(
 
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    open var user: User,
 
     @Column(name = "code", nullable = false)
-    val code: Int,
+    open var code: Int,
 
     @Column(name = "max_action_time", nullable = false)
-    val maxActionTime:LocalDateTime
-    ): BaseEntity()
+    open var maxActionTime: LocalDateTime
+) : BaseEntity()

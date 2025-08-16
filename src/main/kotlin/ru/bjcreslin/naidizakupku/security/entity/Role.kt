@@ -8,11 +8,11 @@ import ru.bjcreslin.naidizakupku.common.entity.BaseEntity
  */
 @Entity
 @Table(name = "roles")
-data class Role(
+open class Role(
 
     @Column(name = "name", unique = true, nullable = false)
-    val name: String,
+    open var name: String,
 
     @OneToMany(mappedBy = "role", cascade = [CascadeType.ALL], orphanRemoval = true)
-    val userRoles: MutableList<UserRole> = mutableListOf()
+    open var userRoles: MutableList<UserRole> = mutableListOf()
 ) : BaseEntity()

@@ -6,12 +6,12 @@ import ru.bjcreslin.naidizakupku.user.entity.User
 
 @Entity
 @Table(name = "telegram_users")
-class TelegramUser(
+open class TelegramUser(
 
     @OneToOne
     @JoinColumn(name = "user_id", nullable = false)
-    val user: User,
+    open var user: User,
 
     @Column(name = "telegram_id", nullable = false)
-    val telegramId: Long
+    open var telegramId: Long
 ) : BaseEntity()

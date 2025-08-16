@@ -8,21 +8,21 @@ import ru.bjcreslin.naidizakupku.telegramUser.entity.TelegramUser
 
 @Entity
 @Table(name = "users")
-class User(
+open class User(
     @Column(name = "username", unique = true, nullable = false)
-    var username: String,
+    open var username: String,
 
     @Column(name = "password", nullable = true)
-    var password: String?,
+    open var password: String?,
 
     @Column(name = "enabled", nullable = false)
-    var enabled: Boolean,
+    open var enabled: Boolean,
 
     @OneToMany(mappedBy = "user", cascade = [CascadeType.ALL], orphanRemoval = true, fetch = FetchType.LAZY)
-    val userRoles: MutableList<UserRole> = mutableListOf(),
+    open var userRoles: MutableList<UserRole> = mutableListOf(),
 
     @OneToOne(mappedBy = "user", cascade = [CascadeType.ALL], fetch = FetchType.LAZY)
-    var telegramUser: TelegramUser? = null,
+    open var telegramUser: TelegramUser? = null,
 
     @ManyToMany
     @JoinTable(
@@ -30,5 +30,5 @@ class User(
         joinColumns = [JoinColumn(name = "user_id")],
         inverseJoinColumns = [JoinColumn(name = "procurement_id")]
     )
-    val procurements: MutableSet<Procurement> = mutableSetOf()
+    open var procurements: MutableSet<Procurement> = mutableSetOf()
 ) : BaseEntity()
