@@ -7,6 +7,7 @@ import org.telegram.telegrambots.bots.TelegramLongPollingBot
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.objects.Update
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException
+import ru.bjcreslin.naidizakupku.cfg.BotConfiguration
 import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 import ru.bjcreslin.naidizakupku.telegram.events.CallbackEvent
 import ru.bjcreslin.naidizakupku.telegram.events.MessageEvent
@@ -15,6 +16,7 @@ import ru.bjcreslin.naidizakupku.telegram.service.TelegramUpdateDeduplicationSer
 
 @Component
 class TelegramBot(
+    private val botConfiguration: BotConfiguration,
     private val messageEvent: MessageEvent,
     private val callbackEvent: CallbackEvent,
     private val telegramMiddleware: TelegramMiddleware,
@@ -25,11 +27,19 @@ class TelegramBot(
     private val logger = LoggerFactory.getLogger(TelegramBot::class.java)
 
     override fun getBotToken(): String {
-        return System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: ""
+        val token = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: botConfiguration.token
+        if (token.isBlank()) {
+            logger.warn("Telegram bot token is not configured")
+        }
+        return token
     }
 
     override fun getBotUsername(): String {
-        return System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME") ?: ""
+        val username = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME") ?: botConfiguration.name
+        if (username.isBlank()) {
+            logger.warn("Telegram bot username is not configured")
+        }
+        return username
     }
 
     override fun onUpdateReceived(update: Update) {

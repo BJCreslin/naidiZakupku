@@ -23,12 +23,26 @@ class BotInitializer(
     @EventListener(ContextRefreshedEvent::class)
     @Throws(TelegramApiException::class)
     fun init() {
+        // Проверяем наличие токена и имени бота
+        val token = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: botConfiguration.token
+        val name = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME") ?: botConfiguration.name
+        
+        if (token.isBlank() || name.isBlank()) {
+            logger.warn("Telegram bot configuration is incomplete. Token: ${if (token.isBlank()) "MISSING" else "SET"}, Name: ${if (name.isBlank()) "MISSING" else "SET"}")
+            logger.warn("Telegram bot will not be initialized. Set environment variables NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN and NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME or configure telergram.token and telergram.name in application.properties")
+            return
+        }
+        
         val telegramBotsApi = TelegramBotsApi(DefaultBotSession::class.java)
         try {
             telegramBotsApi.registerBot(telegramBot)
-            logger.info("Registered telegram Bot")
+            logger.info("Registered telegram Bot: $name")
         } catch (e: TelegramApiRequestException) {
-            logger.error(e.message)
+            logger.error("Failed to register telegram bot: ${e.message}")
+            throw e
+        } catch (e: Exception) {
+            logger.error("Unexpected error during telegram bot registration", e)
+            throw e
         }
     }
 }
