@@ -1,10 +1,10 @@
 package ru.bjcreslin.naidizakupku.procurement.dto
 
-import ru.bjcreslin.naidizakupku.user.dto.UserDto
 import java.math.BigDecimal
 
 /**
  * DTO for {@link ru.bjcreslin.naidizakupku.procurement.entity.Procurement}
+ * Не содержит информацию о пользователях для безопасности
  */
 data class ProcurementResponseDto(
     var id: Long = 0,
@@ -16,8 +16,7 @@ data class ProcurementResponseDto(
     var registryNumber: String?,
     var name: String?,
     var publisher: String?,
-    var price: BigDecimal?,
-    var users: MutableSet<UserDto> = HashSet()
+    var price: BigDecimal?
 ) {
     companion object {
         fun createListResponse(procurements: List<ProcurementResponseDto>, totalCount: Long): ProcurementListResponse {

@@ -15,6 +15,12 @@ interface ProcurementService {
     @Transactional
     fun saveProcurement(procurementDto: ProcurementDto, user: User): Procurement
 
+    /**
+     * Получает список закупок с фильтрацией по пользователю
+     * @param filter фильтр для поиска закупок
+     * @param user пользователь, для которого возвращаются закупки
+     * @return список закупок пользователя
+     */
     @Transactional
-    fun getProcurements(filter: ProcurementFilter): ProcurementListResponse
+    fun getProcurements(filter: ProcurementFilter, user: User): ProcurementListResponse
 }
