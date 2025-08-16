@@ -38,30 +38,39 @@ class TelegramBot(
         
         try {
             // Проверка на дубликаты
-            if (telegramUpdateDeduplicationService.isDuplicate(updateId)) {
+            if (telegramUpdateDeduplicationService.isUpdateProcessed(updateId)) {
                 logger.debug("Duplicate update received: $updateId")
                 customMetricsService.incrementApiRequestCounter("telegram.duplicate", 200)
                 return
             }
-
-            // Обработка через middleware
-            val processedUpdate = telegramMiddleware.process(update)
             
-            when {
-                processedUpdate.hasCallbackQuery() -> {
-                    logger.info("Processing callback query from user: ${processedUpdate.callbackQuery.from.id}")
-                    callbackEvent.handle(processedUpdate)
+            // Отмечаем update как обработанный
+            telegramUpdateDeduplicationService.markAsProcessed(updateId)
+            
+            // Логируем входящий запрос
+            telegramMiddleware.logRequest(update, java.time.LocalDateTime.now())
+            
+            val response: SendMessage? = when {
+                update.hasCallbackQuery() -> {
+                    logger.info("Processing callback query from user: ${update.callbackQuery.from.id}")
                     customMetricsService.incrementTelegramCommandCounter("callback")
+                    callbackEvent.action(update)
                 }
-                processedUpdate.hasMessage() -> {
-                    logger.info("Processing message from user: ${processedUpdate.message.from.id}")
-                    messageEvent.handle(processedUpdate)
+                update.hasMessage() -> {
+                    logger.info("Processing message from user: ${update.message.from.id}")
                     customMetricsService.incrementTelegramCommandCounter("message")
+                    messageEvent.action(update)
                 }
                 else -> {
                     logger.warn("Unknown update type received: $updateId")
                     customMetricsService.incrementApiRequestCounter("telegram.unknown", 400)
+                    null
                 }
+            }
+            
+            if (response != null) {
+                execute(response)
+                telegramMiddleware.logResponse(update, response.text, java.time.LocalDateTime.now())
             }
             
             val processingTime = System.currentTimeMillis() - startTime
@@ -79,7 +88,7 @@ class TelegramBot(
             // Отправка сообщения об ошибке пользователю
             try {
                 val errorMessage = SendMessage()
-                errorMessage.chatId = update.message?.chatId?.toString() ?: update.callbackQuery?.message?.chatId?.toString()
+                errorMessage.chatId = update.message?.chatId?.toString() ?: update.callbackQuery?.message?.chatId?.toString() ?: ""
                 errorMessage.text = "Произошла ошибка при обработке запроса. Попробуйте позже."
                 execute(errorMessage)
             } catch (telegramException: TelegramApiException) {

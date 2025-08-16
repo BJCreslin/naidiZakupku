@@ -5,15 +5,25 @@ import ru.bjcreslin.naidizakupku.gigachat.GigachatService
 import ru.bjcreslin.naidizakupku.telegram.events.handlers.CommandHandler
 import ru.bjcreslin.naidizakupku.telegram.state.entity.SectionState
 
-@Service("gigachat#model")
+@Service("root#model")
 class GigachatModelHandler(
-    val gigachatService: GigachatService
+    private val gigachatService: GigachatService
 ) : CommandHandler {
+    
     override fun execute(chatId: Long, params: String): String {
-        return gigachatService.getModels(chatId)!!.models().data().joinToString("\n")
+        val models = gigachatService.getModels()
+        return buildString {
+            appendLine("🤖 *Доступные модели GigaChat:*")
+            appendLine()
+            models.forEachIndexed { index, model ->
+                appendLine("${index + 1}. `$model`")
+            }
+            appendLine()
+            appendLine("Используйте команду /gigachat для перехода в режим работы с AI")
+        }
     }
 
     override fun getSupportedState(): SectionState {
-        return SectionState.GIGACHAT
+        return SectionState.ROOT
     }
 }

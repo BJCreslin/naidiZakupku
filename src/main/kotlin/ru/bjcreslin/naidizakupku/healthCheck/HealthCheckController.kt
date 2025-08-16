@@ -19,8 +19,8 @@ class HealthCheckController(
 ) {
 
     @GetMapping
-    fun health(): ResponseEntity<ServerStatus> {
-        val status = ServerStatus(
+    fun health(): ResponseEntity<ServerStatusResponse> {
+        val status = ServerStatusResponse(
             status = "UP",
             timestamp = LocalDateTime.now(),
             uptime = getUptime(),
@@ -86,28 +86,28 @@ class HealthCheckController(
 
     private fun getBasicMetrics(): Map<String, Any> {
         return mapOf(
-            "jvm_memory_used" to meterRegistry.get("jvm.memory.used").gauge()?.value() ?: 0.0,
-            "jvm_memory_max" to meterRegistry.get("jvm.memory.max").gauge()?.value() ?: 0.0,
-            "jvm_threads_live" to meterRegistry.get("jvm.threads.live").gauge()?.value() ?: 0.0,
-            "process_cpu_usage" to meterRegistry.get("process.cpu.usage").gauge()?.value() ?: 0.0
+            "jvm_memory_used" to (meterRegistry.get("jvm.memory.used").gauge()?.value() ?: 0.0),
+            "jvm_memory_max" to (meterRegistry.get("jvm.memory.max").gauge()?.value() ?: 0.0),
+            "jvm_threads_live" to (meterRegistry.get("jvm.threads.live").gauge()?.value() ?: 0.0),
+            "process_cpu_usage" to (meterRegistry.get("process.cpu.usage").gauge()?.value() ?: 0.0)
         )
     }
 
     private fun getDetailedMetrics(): Map<String, Any> {
         return mapOf(
-            "jvm_memory_used" to meterRegistry.get("jvm.memory.used").gauge()?.value() ?: 0.0,
-            "jvm_memory_max" to meterRegistry.get("jvm.memory.max").gauge()?.value() ?: 0.0,
-            "jvm_threads_live" to meterRegistry.get("jvm.threads.live").gauge()?.value() ?: 0.0,
-            "jvm_threads_peak" to meterRegistry.get("jvm.threads.peak").gauge()?.value() ?: 0.0,
-            "process_cpu_usage" to meterRegistry.get("process.cpu.usage").gauge()?.value() ?: 0.0,
-            "system_cpu_usage" to meterRegistry.get("system.cpu.usage").gauge()?.value() ?: 0.0,
-            "http_server_requests_total" to meterRegistry.get("http.server.requests").counter()?.count() ?: 0.0,
-            "cache_size_total" to meterRegistry.get("cache.size").gauge()?.value() ?: 0.0
+            "jvm_memory_used" to (meterRegistry.get("jvm.memory.used").gauge()?.value() ?: 0.0),
+            "jvm_memory_max" to (meterRegistry.get("jvm.memory.max").gauge()?.value() ?: 0.0),
+            "jvm_threads_live" to (meterRegistry.get("jvm.threads.live").gauge()?.value() ?: 0.0),
+            "jvm_threads_peak" to (meterRegistry.get("jvm.threads.peak").gauge()?.value() ?: 0.0),
+            "process_cpu_usage" to (meterRegistry.get("process.cpu.usage").gauge()?.value() ?: 0.0),
+            "system_cpu_usage" to (meterRegistry.get("system.cpu.usage").gauge()?.value() ?: 0.0),
+            "http_server_requests_total" to (meterRegistry.get("http.server.requests").counter()?.count() ?: 0.0),
+            "cache_size_total" to (meterRegistry.get("cache.size").gauge()?.value() ?: 0.0)
         )
     }
 }
 
-data class ServerStatus(
+data class ServerStatusResponse(
     val status: String,
     val timestamp: LocalDateTime,
     val uptime: String,

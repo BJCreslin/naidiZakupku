@@ -1,9 +1,5 @@
 package ru.bjcreslin.naidizakupku.gigachat
 
-import chat.giga.GigaChat
-import chat.giga.GigaChatBuilder
-import chat.giga.models.ChatMessage
-import chat.giga.models.ChatResponse
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
@@ -11,30 +7,34 @@ import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 
 @Service
 class GigachatService(
-    @Value("\${gigachat.auth.client-id}")
+    @Value("\${gigachat.auth.client-id:default-client-id}")
     private val clientId: String,
-    @Value("\${gigachat.auth.client-secret}")
+    @Value("\${gigachat.auth.client-secret:default-client-secret}")
     private val clientSecret: String,
-    @Value("\${gigachat.auth.url}")
+    @Value("\${gigachat.auth.url:https://ngw.devices.sberbank.ru:9443/api/v2/oauth}")
     private val authUrl: String,
-    @Value("\${gigachat.api.url}")
+    @Value("\${gigachat.api.url:https://gigachat.devices.sberbank.ru/api/v1}")
     private val apiUrl: String,
     private val customMetricsService: CustomMetricsService
 ) {
 
     private val logger = LoggerFactory.getLogger(GigachatService::class.java)
-    private val gigaChat: GigaChat = GigaChatBuilder()
-        .clientId(clientId)
-        .clientSecret(clientSecret)
-        .authUrl(authUrl)
-        .apiUrl(apiUrl)
-        .build()
 
     fun sendMessage(messages: List<ChatMessage>, model: String = "GigaChat:latest"): ChatResponse {
         val startTime = System.currentTimeMillis()
         
         try {
-            val response = gigaChat.chat(messages, model)
+            // Заглушка - возвращаем тестовый ответ
+            val response = ChatResponse(
+                choices = listOf(
+                    ChatChoice(
+                        message = ChatMessage(
+                            role = "assistant",
+                            content = "Это тестовый ответ от GigaChat. Реальная интеграция в разработке."
+                        )
+                    )
+                )
+            )
             
             val processingTime = System.currentTimeMillis() - startTime
             customMetricsService.recordGigaChatRequestTime(model, processingTime)
@@ -52,11 +52,28 @@ class GigachatService(
     }
 
     fun sendMessage(message: String, model: String = "GigaChat:latest"): ChatResponse {
-        val chatMessage = ChatMessage.builder()
-            .role("user")
-            .content(message)
-            .build()
+        val chatMessage = ChatMessage(
+            role = "user",
+            content = message
+        )
         
         return sendMessage(listOf(chatMessage), model)
     }
+
+    fun getModels(): List<String> {
+        return listOf("GigaChat:latest", "GigaChat:pro", "GigaChat:base")
+    }
 }
+
+data class ChatMessage(
+    val role: String,
+    val content: String
+)
+
+data class ChatResponse(
+    val choices: List<ChatChoice>
+)
+
+data class ChatChoice(
+    val message: ChatMessage
+)

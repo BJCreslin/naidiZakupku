@@ -8,5 +8,7 @@ import ru.bjcreslin.naidizakupku.news.dbo.News
 interface NewsRepository : JpaRepository<News, Long> {
 
     fun findTop10ByOrderByPublicationDateDesc(): List<News>
+    
+    fun findByTitleAndUrl(title: String, url: String): News?
 
 }

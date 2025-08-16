@@ -5,5 +5,7 @@ enum class NewsType {
     LAW_DRAFT,           // Законопроект
     ORDER,               // Приказ
     LETTER,              // Письмо
-    GENERAL              // Общие новости
+    GENERAL,             // Общие новости
+    PROCUREMENT,         // Новости госзакупок
+    ATOMIC               // Новости атомной отрасли
 }

@@ -51,9 +51,9 @@ class NewsParsingService(
 
     fun parseAndSaveNews() {
         val sources = listOf(
-            "https://zakupki.gov.ru/epz/main/public/home.html" to NewsType.PROCUREMENT,
-            "https://www.goszakupki.ru/news/" to NewsType.PROCUREMENT,
-            "https://zakupki.rosatom.ru/news/" to NewsType.ATOMIC
+            Pair("https://zakupki.gov.ru/epz/main/public/home.html", NewsType.PROCUREMENT),
+            Pair("https://www.goszakupki.ru/news/", NewsType.PROCUREMENT),
+            Pair("https://zakupki.rosatom.ru/news/", NewsType.ATOMIC)
         )
 
         sources.forEach { (url, type) ->
@@ -85,11 +85,11 @@ class NewsParsingService(
         
         newsItems.forEach { news ->
             try {
-                news.type = type
+                news.newsType = type
                 news.createdAt = LocalDateTime.now()
                 
                 // Проверяем, не существует ли уже такая новость
-                val existingNews = newsRepository.findByTitleAndSource(news.title, news.source)
+                val existingNews = newsRepository.findByTitleAndUrl(news.title ?: "", news.url)
                 if (existingNews == null) {
                     newsRepository.save(news)
                     savedCount++

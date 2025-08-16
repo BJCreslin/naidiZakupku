@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.server.ResponseStatusException
-import ru.bjcreslin.naidizakupku.procurement.dto.ProcurementResponseDto
+import ru.bjcreslin.naidizakupku.procurement.dto.ProcurementListResponse
 import ru.bjcreslin.naidizakupku.procurement.filter.ProcurementFilter
 import ru.bjcreslin.naidizakupku.procurement.mapper.ProcurementMapper
 import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
@@ -38,7 +38,7 @@ class ProcurementResource(
 ) {
 
     @GetMapping
-    fun getProcurements(@ModelAttribute filter: ProcurementFilter): ResponseEntity<ProcurementResponseDto> {
+    fun getProcurements(@ModelAttribute filter: ProcurementFilter): ResponseEntity<ProcurementListResponse> {
         val startTime = System.currentTimeMillis()
         
         try {

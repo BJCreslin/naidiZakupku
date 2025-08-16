@@ -6,11 +6,15 @@ import ru.bjcreslin.naidizakupku.chromeExtension.dto.ProcurementDto
 import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.procurement.repository.ProcurementRepository
 import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
+import ru.bjcreslin.naidizakupku.procurement.filter.ProcurementFilter
+import ru.bjcreslin.naidizakupku.procurement.dto.ProcurementListResponse
+import ru.bjcreslin.naidizakupku.procurement.mapper.ProcurementMapper
 import ru.bjcreslin.naidizakupku.user.entity.User
 
 @Service
 class ProcurementServiceImpl(
-    private val procurementRepository: ProcurementRepository
+    private val procurementRepository: ProcurementRepository,
+    private val procurementMapper: ProcurementMapper
 ) : ProcurementService {
 
     private val logger = LoggerFactory.getLogger(ProcurementServiceImpl::class.java)
@@ -27,6 +31,16 @@ class ProcurementServiceImpl(
         } ?: createProcurement(procurementDto, user).also {
             procurementRepository.save(it)
         }
+    }
+
+    override fun getProcurements(filter: ProcurementFilter): ProcurementListResponse {
+        val specification = filter.toSpecification()
+        val procurements = procurementRepository.findAll(specification)
+        
+        return ProcurementListResponse(
+            procurements = procurements.map { procurementMapper.toProcurementDto(it) },
+            totalCount = procurements.size.toLong()
+        )
     }
 
     private fun createProcurement(procurementDto: ProcurementDto, user: User): Procurement {

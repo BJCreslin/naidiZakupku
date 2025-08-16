@@ -45,14 +45,11 @@ class GlobalExceptionHandler(
     fun handleInvalidTokenException(ex: InvalidTokenException, request: WebRequest): ResponseEntity<ErrorResponse> {
         customMetricsService.incrementApiRequestCounter("api.error.invalid_token", 401)
         
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = 401,
-            error = "Unauthorized",
-            message = ex.message ?: "Invalid token",
-            path = request.getDescription(false)
+        return errorFactory.createErrorResponse(
+            errorCode = ErrorCode.INVALID_TOKEN,
+            details = ex.message,
+            httpStatus = HttpStatus.UNAUTHORIZED
         )
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse)
     }
 
     @ExceptionHandler(TelegramBotServiceException::class)
@@ -93,46 +90,35 @@ class GlobalExceptionHandler(
     ): ResponseEntity<ValidationErrorResponse> {
         customMetricsService.incrementApiRequestCounter("api.error.validation", 400)
         
-        val fieldErrors = ex.bindingResult.fieldErrors.map { fieldError ->
-            "${fieldError.field}: ${fieldError.defaultMessage}"
+        val fieldErrors = ex.bindingResult.fieldErrors.associate { fieldError ->
+            fieldError.field to (fieldError.defaultMessage ?: "Invalid value")
         }
         
-        val validationErrorResponse = ValidationErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = 400,
-            error = "Validation Failed",
-            message = "Validation failed for request",
-            path = request.getDescription(false),
-            fieldErrors = fieldErrors
+        return errorFactory.createValidationErrorResponse(
+            fieldErrors = fieldErrors,
+            customMessage = "Validation failed for request"
         )
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(validationErrorResponse)
     }
 
     @ExceptionHandler(IllegalArgumentException::class)
     fun handleIllegalArgumentException(ex: IllegalArgumentException, request: WebRequest): ResponseEntity<ErrorResponse> {
         customMetricsService.incrementApiRequestCounter("api.error.bad_request", 400)
         
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = 400,
-            error = "Bad Request",
-            message = ex.message ?: "Invalid request",
-            path = request.getDescription(false)
+        return errorFactory.createErrorResponse(
+            errorCode = ErrorCode.INVALID_INPUT,
+            details = ex.message,
+            httpStatus = HttpStatus.BAD_REQUEST
         )
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorResponse)
     }
 
     @ExceptionHandler(Exception::class)
     fun handleAllExceptions(ex: Exception, request: WebRequest): ResponseEntity<ErrorResponse> {
         customMetricsService.incrementApiRequestCounter("api.error.internal", 500)
         
-        val errorResponse = ErrorResponse(
-            timestamp = LocalDateTime.now(),
-            status = 500,
-            error = "Internal Server Error",
-            message = ex.message ?: "An unexpected error occurred",
-            path = request.getDescription(false)
+        return errorFactory.createErrorResponse(
+            errorCode = ErrorCode.INTERNAL_SERVER_ERROR,
+            details = ex.message,
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR
         )
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse)
     }
 }

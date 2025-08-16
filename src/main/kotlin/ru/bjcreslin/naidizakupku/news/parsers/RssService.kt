@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import ru.bjcreslin.naidizakupku.common.DateTimeUtils
 import ru.bjcreslin.naidizakupku.news.dto.NewsItem
 import ru.bjcreslin.naidizakupku.news.dto.Rss
+import ru.bjcreslin.naidizakupku.news.dbo.News
 import java.time.LocalDate
 
 @Service
@@ -24,5 +25,29 @@ class RssService(
 
         val rss = xmlMapper.readValue(xmlResponse, Rss::class.java)
         return rss.channel?.items.orEmpty()
+    }
+
+    fun parseRssFeed(url: String): List<News> {
+        return try {
+            val restTemplate = restTemplateBuilder.build()
+            val xmlResponse = restTemplate.getForObject(url, String::class.java)
+            
+            if (xmlResponse != null) {
+                val rss = xmlMapper.readValue(xmlResponse, Rss::class.java)
+                rss.channel?.items?.map { item ->
+                    News(
+                        title = item.title ?: "",
+                        url = item.link ?: "",
+                        publicationDate = item.publishedAt,
+                        content = item.description ?: "",
+                        newsType = ru.bjcreslin.naidizakupku.news.dbo.NewsType.GENERAL
+                    )
+                } ?: emptyList()
+            } else {
+                emptyList()
+            }
+        } catch (e: Exception) {
+            emptyList()
+        }
     }
 }

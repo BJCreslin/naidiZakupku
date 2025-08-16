@@ -18,4 +18,18 @@ data class ProcurementResponseDto(
     var publisher: String?,
     var price: BigDecimal?,
     var users: MutableSet<UserDto> = HashSet()
+) {
+    companion object {
+        fun createListResponse(procurements: List<ProcurementResponseDto>, totalCount: Long): ProcurementListResponse {
+            return ProcurementListResponse(procurements, totalCount)
+        }
+    }
+}
+
+/**
+ * Response wrapper for list of procurements
+ */
+data class ProcurementListResponse(
+    val procurements: List<ProcurementResponseDto>,
+    val totalCount: Long
 )
