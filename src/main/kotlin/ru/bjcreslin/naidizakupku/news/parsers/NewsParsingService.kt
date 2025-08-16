@@ -4,13 +4,19 @@ import org.slf4j.LoggerFactory
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 import ru.bjcreslin.naidizakupku.news.dbo.News
 import ru.bjcreslin.naidizakupku.news.dbo.NewsType
 import ru.bjcreslin.naidizakupku.news.repository.NewsRepository
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @Service
-class NewsParsingService(val newsRepository: NewsRepository, val rssService: RssService) {
+class NewsParsingService(
+    private val rssService: RssService,
+    private val newsRepository: NewsRepository,
+    private val customMetricsService: CustomMetricsService
+) {
 
     private val logger = LoggerFactory.getLogger(NewsParsingService::class.java)
 
@@ -43,7 +49,56 @@ class NewsParsingService(val newsRepository: NewsRepository, val rssService: Rss
         }
     }
 
+    fun parseAndSaveNews() {
+        val sources = listOf(
+            "https://zakupki.gov.ru/epz/main/public/home.html" to NewsType.PROCUREMENT,
+            "https://www.goszakupki.ru/news/" to NewsType.PROCUREMENT,
+            "https://zakupki.rosatom.ru/news/" to NewsType.ATOMIC
+        )
+
+        sources.forEach { (url, type) ->
+            val startTime = System.currentTimeMillis()
+            
+            try {
+                val newsItems = rssService.parseRssFeed(url)
+                val savedCount = saveNewsItems(newsItems, type)
+                
+                val parsingTime = System.currentTimeMillis() - startTime
+                customMetricsService.recordNewsParsingTime(url, parsingTime)
+                
+                logger.info("Parsed $savedCount news items from $url in ${parsingTime}ms")
+                
+            } catch (e: Exception) {
+                val parsingTime = System.currentTimeMillis() - startTime
+                customMetricsService.recordNewsParsingTime(url, parsingTime)
+                logger.error("Error parsing news from $url", e)
+            }
+        }
+    }
+
     private fun saveNewNews(newsItems: List<News>): Int {
         return newsRepository.saveAll(newsItems).size
+    }
+
+    private fun saveNewsItems(newsItems: List<News>, type: NewsType): Int {
+        var savedCount = 0
+        
+        newsItems.forEach { news ->
+            try {
+                news.type = type
+                news.createdAt = LocalDateTime.now()
+                
+                // Проверяем, не существует ли уже такая новость
+                val existingNews = newsRepository.findByTitleAndSource(news.title, news.source)
+                if (existingNews == null) {
+                    newsRepository.save(news)
+                    savedCount++
+                }
+            } catch (e: Exception) {
+                logger.error("Error saving news: ${news.title}", e)
+            }
+        }
+        
+        return savedCount
     }
 }

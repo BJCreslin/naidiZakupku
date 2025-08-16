@@ -1,0 +1,188 @@
+groups:
+  - name: naidizakupku-alerts
+    rules:
+      # Критические алерты
+      - alert: HighMemoryUsage
+        expr: jvm_memory_used_bytes / jvm_memory_max_bytes > 0.85
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High memory usage detected"
+          description: "Memory usage is above 85% for more than 5 minutes"
+
+      - alert: HighCPUUsage
+        expr: process_cpu_usage > 0.8
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High CPU usage detected"
+          description: "CPU usage is above 80% for more than 5 minutes"
+
+      - alert: HighHTTPResponseTime
+        expr: histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m])) > 2
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High HTTP response time detected"
+          description: "95th percentile HTTP response time is above 2 seconds"
+
+      - alert: HighTelegramProcessingTime
+        expr: histogram_quantile(0.95, rate(telegram_update_processing_time_seconds_bucket[5m])) > 1
+        for: 3m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High Telegram processing time detected"
+          description: "95th percentile Telegram update processing time is above 1 second"
+
+      - alert: HighGigaChatErrors
+        expr: rate(gigachat_errors_total[5m]) > 0.1
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High GigaChat error rate detected"
+          description: "GigaChat error rate is above 0.1 errors per second"
+
+      - alert: HighRateLimitViolations
+        expr: rate(rate_limit_exceeded_total[5m]) > 5
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High rate limit violations detected"
+          description: "Rate limit violations are above 5 per second"
+
+      # Предупреждающие алерты
+      - alert: LowCacheHitRatio
+        expr: cache_gets_total{result="hit"} / cache_gets_total < 0.7
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low cache hit ratio detected"
+          description: "Cache hit ratio is below 70% for more than 10 minutes"
+
+      - alert: HighCacheEvictions
+        expr: rate(cache_evictions_total[5m]) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High cache eviction rate detected"
+          description: "Cache eviction rate is above 10 per second"
+
+      - alert: HighJWTValidationTime
+        expr: histogram_quantile(0.95, rate(jwt_validation_time_seconds_bucket[5m])) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High JWT validation time detected"
+          description: "95th percentile JWT validation time is above 100ms"
+
+      - alert: HighNewsParsingTime
+        expr: rate(news_parsing_time_seconds_sum[5m]) / rate(news_parsing_time_seconds_count[5m]) > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High news parsing time detected"
+          description: "Average news parsing time is above 5 seconds"
+
+      - alert: HighDuplicateTelegramUpdates
+        expr: rate(telegram_duplicate_updates_total[5m]) / rate(telegram_commands_total[5m]) > 0.3
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High duplicate Telegram updates detected"
+          description: "Duplicate Telegram updates are above 30%"
+
+      # Информационные алерты
+      - alert: ApplicationDown
+        expr: up{job="naidizakupku"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Application is down"
+          description: "NaidiZakupku application is not responding"
+
+      - alert: HighThreadCount
+        expr: jvm_threads_live_threads > 100
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High thread count detected"
+          description: "Number of live threads is above 100"
+
+      - alert: LowDiskSpace
+        expr: (node_filesystem_avail_bytes{mountpoint="/"} / node_filesystem_size_bytes{mountpoint="/"}) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low disk space detected"
+          description: "Disk space usage is above 90%"
+
+      # Бизнес-метрики
+      - alert: LowProcurementSearches
+        expr: rate(procurement_searches_total[1h]) < 1
+        for: 30m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Low procurement search activity detected"
+          description: "Procurement search rate is below 1 per hour"
+
+      - alert: HighTelegramCommandErrors
+        expr: rate(telegram_commands_total{command="error"}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Telegram command error rate detected"
+          description: "Telegram command error rate is above 0.1 per second"
+
+      # Метрики производительности
+      - alert: HighDatabaseConnectionPool
+        expr: hikaricp_connections_active / hikaricp_connections_max > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database connection pool usage detected"
+          description: "Database connection pool usage is above 80%"
+
+      - alert: HighDatabaseQueryTime
+        expr: histogram_quantile(0.95, rate(hibernate_sessions_seconds_bucket[5m])) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High database query time detected"
+          description: "95th percentile database query time is above 1 second"
+
+      # Системные алерты
+      - alert: HighGarbageCollectionTime
+        expr: rate(jvm_gc_collection_seconds_sum[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High garbage collection time detected"
+          description: "Garbage collection is taking more than 10% of CPU time"
+
+      - alert: HighNetworkErrors
+        expr: rate(http_server_requests_seconds_count{status=~"5.."}[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High network error rate detected"
+          description: "5xx error rate is above 0.1 per second"

@@ -1,69 +1,62 @@
 package ru.bjcreslin.naidizakupku.gigachat
 
-import chat.giga.client.GigaChatClient
-import chat.giga.client.auth.AuthClient
-import chat.giga.client.auth.AuthClientBuilder.OAuthBuilder
-import chat.giga.model.ModelName
-import chat.giga.model.Scope
-import chat.giga.model.completion.ChatMessage
-import chat.giga.model.completion.ChatMessageRole
-import chat.giga.model.completion.CompletionRequest
+import chat.giga.GigaChat
+import chat.giga.GigaChatBuilder
+import chat.giga.models.ChatMessage
+import chat.giga.models.ChatResponse
+import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import ru.bjcreslin.naidizakupku.cfg.GigaChatConfiguration
-
+import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 
 @Service
-class GigachatService(val chatConfiguration: GigaChatConfiguration) {
-    private val Logger: org.slf4j.Logger = org.slf4j.LoggerFactory.getLogger(this.javaClass)
+class GigachatService(
+    @Value("\${gigachat.auth.client-id}")
+    private val clientId: String,
+    @Value("\${gigachat.auth.client-secret}")
+    private val clientSecret: String,
+    @Value("\${gigachat.auth.url}")
+    private val authUrl: String,
+    @Value("\${gigachat.api.url}")
+    private val apiUrl: String,
+    private val customMetricsService: CustomMetricsService
+) {
 
-    fun getModels(chatId: Long): GigaChatClient? {
-        val client: GigaChatClient? = GigaChatClient.builder()
-            .authClient(
-                AuthClient.builder()
-                    .withOAuth(
-                        OAuthBuilder.builder()
-                            .scope(Scope.GIGACHAT_API_PERS)
-                            .clientId(chatConfiguration.clientId)
-                            .clientSecret(chatConfiguration.clientSecret)
-                            .build()
-                    )
-                    .build()
-            )
-            .logRequests(true)
-            .logResponses(true)
-            .build()
-        Logger.debug("User $chatId trying to get list of models. Balance: ${client?.balance().toString()}")
-        return client
+    private val logger = LoggerFactory.getLogger(GigachatService::class.java)
+    private val gigaChat: GigaChat = GigaChatBuilder()
+        .clientId(clientId)
+        .clientSecret(clientSecret)
+        .authUrl(authUrl)
+        .apiUrl(apiUrl)
+        .build()
+
+    fun sendMessage(messages: List<ChatMessage>, model: String = "GigaChat:latest"): ChatResponse {
+        val startTime = System.currentTimeMillis()
+        
+        try {
+            val response = gigaChat.chat(messages, model)
+            
+            val processingTime = System.currentTimeMillis() - startTime
+            customMetricsService.recordGigaChatRequestTime(model, processingTime)
+            
+            logger.debug("GigaChat request completed in ${processingTime}ms using model: $model")
+            
+            return response
+        } catch (e: Exception) {
+            val processingTime = System.currentTimeMillis() - startTime
+            customMetricsService.recordGigaChatRequestTime(model, processingTime)
+            
+            logger.error("Error in GigaChat request using model: $model", e)
+            throw e
+        }
     }
 
-    fun getAnswer(text: String, chatId: Long): String? {
-        val client: GigaChatClient? = GigaChatClient.builder()
-            .verifySslCerts(false)
-            .authClient(
-                AuthClient.builder()
-                    .withOAuth(
-                        OAuthBuilder.builder()
-                            .scope(Scope.GIGACHAT_API_PERS)
-                            .clientId(chatConfiguration.clientId)
-                            .clientSecret(chatConfiguration.clientSecret)
-                            .build()
-                    )
-                    .build()
-            )
+    fun sendMessage(message: String, model: String = "GigaChat:latest"): ChatResponse {
+        val chatMessage = ChatMessage.builder()
+            .role("user")
+            .content(message)
             .build()
-        val response = client?.completions(
-            CompletionRequest.builder()
-                .model(ModelName.GIGA_CHAT)
-                .message(
-                    ChatMessage.builder()
-                        .content(text)
-                        .role(ChatMessageRole.USER)
-                        .build()
-                )
-                .build(),
-            chatId.toString()
-        )
-        Logger.info("Response from gigachat: ${response.toString()}")
-        return response?.choices()?.get(0)?.message()?.content()
+        
+        return sendMessage(listOf(chatMessage), model)
     }
 }

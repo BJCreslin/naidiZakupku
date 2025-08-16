@@ -25,80 +25,56 @@ import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.procurement.repository.ProcurementRepository
 import java.io.IOException
 import java.util.Optional
+import org.springframework.http.ResponseEntity
+import org.springframework.web.bind.annotation.*
+import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
+import ru.bjcreslin.naidizakupku.procurement.service.ProcurementService
 
 @RestController
-@RequestMapping("/rest/admin-ui/procurements")
+@RequestMapping("/api/v1/procurements")
 class ProcurementResource(
-    private val procurementRepository: ProcurementRepository,
-    private val procurementMapper: ProcurementMapper,
-    private val objectMapper: ObjectMapper
+    private val procurementService: ProcurementService,
+    private val customMetricsService: CustomMetricsService
 ) {
+
     @GetMapping
-    fun getAll(@ModelAttribute filter: ProcurementFilter, pageable: Pageable): PagedModel<ProcurementResponseDto> {
-        val spec: Specification<Procurement> = filter.toSpecification()
-        val procurements: Page<Procurement> = procurementRepository.findAll(spec, pageable)
-        val procurementResponseDtoPage: Page<ProcurementResponseDto> = procurements.map(procurementMapper::toProcurementDto)
-        return PagedModel(procurementResponseDtoPage)
-    }
-
-    @GetMapping("/{id}")
-    fun getOne(@PathVariable id: Long): ProcurementResponseDto {
-        val procurementOptional: Optional<Procurement> = procurementRepository.findById(id)
-        return procurementMapper.toProcurementDto(procurementOptional.orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `$id` not found")
-        })
-    }
-
-    @GetMapping("/by-ids")
-    fun getMany(@RequestParam ids: List<Long>): List<ProcurementResponseDto> {
-        val procurements: List<Procurement> = procurementRepository.findAllById(ids)
-        return procurements.map(procurementMapper::toProcurementDto)
-    }
-
-    @PostMapping
-    fun create(@RequestBody dto: ProcurementResponseDto): ProcurementResponseDto {
-        val procurement: Procurement = procurementMapper.toEntity(dto)
-        val resultProcurement: Procurement = procurementRepository.save(procurement)
-        return procurementMapper.toProcurementDto(resultProcurement)
-    }
-
-    @PatchMapping("/{id}")
-    @Throws(IOException::class)
-    fun patch(@PathVariable id: Long, @RequestBody patchNode: JsonNode): ProcurementResponseDto {
-        val procurement: Procurement = procurementRepository.findById(id).orElseThrow {
-            ResponseStatusException(HttpStatus.NOT_FOUND, "Entity with id `$id` not found")
+    fun getProcurements(@ModelAttribute filter: ProcurementFilter): ResponseEntity<ProcurementResponseDto> {
+        val startTime = System.currentTimeMillis()
+        
+        try {
+            val result = procurementService.getProcurements(filter)
+            
+            // Записываем метрики поиска
+            val searchQuery = buildSearchQuery(filter)
+            customMetricsService.incrementProcurementSearchCounter(searchQuery)
+            
+            val processingTime = System.currentTimeMillis() - startTime
+            // Можно добавить метрику времени обработки поиска
+            
+            return ResponseEntity.ok(result)
+        } catch (e: Exception) {
+            val processingTime = System.currentTimeMillis() - startTime
+            // Логируем ошибку
+            throw e
         }
-        val procurementDto = procurementMapper.toProcurementDto(procurement)
-        objectMapper.readerForUpdating(procurementDto).readValue<ProcurementResponseDto>(patchNode)
-        procurementMapper.updateWithNull(procurementDto, procurement)
-        val resultProcurement: Procurement = procurementRepository.save(procurement)
-        return procurementMapper.toProcurementDto(resultProcurement)
     }
 
-    @PatchMapping
-    @Throws(IOException::class)
-    fun patchMany(@RequestParam ids: List<Long>, @RequestBody patchNode: JsonNode): List<Long> {
-        val procurements: Collection<Procurement> = procurementRepository.findAllById(ids)
-        for (procurement in procurements) {
-            val procurementDto = procurementMapper.toProcurementDto(procurement)
-            objectMapper.readerForUpdating(procurementDto).readValue<ProcurementResponseDto>(patchNode)
-            procurementMapper.updateWithNull(procurementDto, procurement)
+    private fun buildSearchQuery(filter: ProcurementFilter): String {
+        val queryParts = mutableListOf<String>()
+        
+        if (!filter.searchText.isNullOrBlank()) {
+            queryParts.add("text:${filter.searchText}")
         }
-        val resultProcurements: List<Procurement> = procurementRepository.saveAll(procurements)
-        return resultProcurements.map(Procurement::id)
-    }
-
-    @DeleteMapping("/{id}")
-    fun delete(@PathVariable id: Long): ProcurementResponseDto? {
-        val procurement: Procurement? = procurementRepository.findById(id).orElse(null)
-        if (procurement != null) {
-            procurementRepository.delete(procurement)
+        if (!filter.customerName.isNullOrBlank()) {
+            queryParts.add("customer:${filter.customerName}")
         }
-        return procurement?.let(procurementMapper::toProcurementDto)
-    }
-
-    @DeleteMapping
-    fun deleteMany(@RequestParam ids: List<Long>) {
-        procurementRepository.deleteAllById(ids)
+        if (filter.minPrice != null) {
+            queryParts.add("minPrice:${filter.minPrice}")
+        }
+        if (filter.maxPrice != null) {
+            queryParts.add("maxPrice:${filter.maxPrice}")
+        }
+        
+        return if (queryParts.isEmpty()) "empty" else queryParts.joinToString("|")
     }
 }

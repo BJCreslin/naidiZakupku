@@ -3,13 +3,18 @@ package ru.bjcreslin.naidizakupku.security.service
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
 import org.springframework.stereotype.Component
 import org.springframework.web.filter.OncePerRequestFilter
+import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 
 @Component
-class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFilter() {
+class JwtTokenFilter(
+    private val jwtTokenProvider: JwtTokenProvider,
+    private val customMetricsService: CustomMetricsService
+) : OncePerRequestFilter() {
 
     private val publicPathMatchers = listOf(
         AntPathRequestMatcher("/api/health"),
@@ -26,28 +31,32 @@ class JwtTokenFilter(val jwtTokenProvider: JwtTokenProvider) : OncePerRequestFil
         response: HttpServletResponse,
         filterChain: FilterChain
     ) {
-        // Разрешённые пути – без проверки токена
-        if (publicPathMatchers.any { it.matches(request) }) {
-            filterChain.doFilter(request, response)
-            return
-        }
-
-        val token = jwtTokenProvider.resolveToken(request)
+        val startTime = System.currentTimeMillis()
+        
         try {
+            val token = getTokenFromRequest(request)
+            
             if (token != null && jwtTokenProvider.validateToken(token)) {
-                val auth = jwtTokenProvider.getAuthentication(token)
-                if (auth != null) {
-                    SecurityContextHolder.getContext().authentication = auth
-                }
-            } else {
-                SecurityContextHolder.clearContext()
+                val authentication = jwtTokenProvider.getAuthentication(token)
+                SecurityContextHolder.getContext().authentication = authentication
             }
+            
+            val validationTime = System.currentTimeMillis() - startTime
+            customMetricsService.recordJwtTokenValidationTime(validationTime)
+            
         } catch (e: Exception) {
-            SecurityContextHolder.clearContext()
-            logger.error("Error processing JWT token", e)
-            throw e
+            val validationTime = System.currentTimeMillis() - startTime
+            customMetricsService.recordJwtTokenValidationTime(validationTime)
+            // Логируем ошибку, но не прерываем цепочку фильтров
         }
-
+        
         filterChain.doFilter(request, response)
+    }
+
+    private fun getTokenFromRequest(request: HttpServletRequest): String? {
+        val bearerToken = request.getHeader("Authorization")
+        return if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
+            bearerToken.substring(7)
+        } else null
     }
 }

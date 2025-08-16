@@ -1,286 +1,350 @@
-# Мониторинг кэшей приложения
+# Мониторинг производительности приложения
 
 ## Обзор
 
-Приложение настроено для мониторинга кэшей через Spring Boot Actuator с использованием Micrometer и Prometheus. Все кэши (Caffeine) автоматически инструментированы и предоставляют детальную статистику.
+Приложение настроено для комплексного мониторинга производительности через Spring Boot Actuator с использованием Micrometer и Prometheus. Система включает мониторинг кэшей, API запросов, Telegram бота, GigaChat интеграции и общих метрик JVM.
+
+## Архитектура мониторинга
+
+### Компоненты
+- **Spring Boot Actuator** - базовые endpoints для мониторинга
+- **Micrometer** - абстракция для метрик
+- **Prometheus** - сбор и хранение метрик
+- **CustomMetricsService** - кастомные метрики приложения
+- **CacheMonitoringConfiguration** - мониторинг кэшей
 
 ## Настройка мониторинга
 
 ### application.properties
 
 ```properties
-# Включение endpoints для мониторинга
-management.endpoints.web.exposure.include=health,info,metrics,prometheus,caches
+# Actuator endpoints
+management.endpoints.web.exposure.include=health,info,metrics,prometheus,caches,env,configprops
+management.endpoint.health.show-details=always
+management.endpoint.health.show-components=always
+
+# Prometheus метрики
 management.prometheus.metrics.export.enabled=true
 management.prometheus.metrics.export.step=1m
+management.prometheus.metrics.export.descriptions=true
 
-# Настройки мониторинга кэшей
-management.endpoint.caches.enabled=true
+# HTTP метрики
+management.metrics.web.server.request.autotime.enabled=true
+management.metrics.web.server.request.autotime.percentiles=0.5,0.95,0.99
+management.metrics.web.server.request.autotime.percentiles-histogram=true
+
+# JVM метрики
+management.metrics.jvm.enabled=true
+management.metrics.process.enabled=true
+management.metrics.system.enabled=true
+
+# Database метрики
+management.metrics.jdbc.instrument=true
+management.metrics.hikaricp.enabled=true
+
+# Cache monitoring
 management.metrics.cache.instrument=true
-logging.level.org.springframework.cache=INFO
+management.metrics.cache.monitoring.enabled=true
 ```
-
-### CacheConfiguration.kt
-
-```kotlin
-private fun caffeine() =
-    Caffeine.newBuilder()
-        .expireAfterWrite(10, java.util.concurrent.TimeUnit.MINUTES)
-        .maximumSize(200)
-        .recordStats() // Включение сбора статистики
-```
-
-### CacheMonitoringConfiguration.kt
-
-Автоматически регистрирует метрики всех Caffeine кэшей в Micrometer после запуска приложения.
 
 ## Доступные endpoints
 
-### 1. Общая информация о кэшах
+### 1. Общее здоровье системы
 
 ```bash
-GET http://localhost:9000/actuator/caches
+GET http://localhost:9000/actuator/health
 ```
 
 **Ответ:**
 ```json
 {
-  "cacheManagers": {
-    "cacheManager": {
-      "caches": {
-        "ProjectInfoCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "gigachatSessionCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "telegramUpdateCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "telegramUserCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "telegramStateCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "procurementsListCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "statsCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        },
-        "helpMessageCache": {
-          "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache"
-        }
+  "status": "UP",
+  "components": {
+    "db": {
+      "status": "UP",
+      "details": {
+        "database": "PostgreSQL",
+        "validationQuery": "isValid()"
+      }
+    },
+    "diskSpace": {
+      "status": "UP",
+      "details": {
+        "total": 499963174912,
+        "free": 419430400000,
+        "threshold": 10485760
       }
     }
   }
 }
 ```
 
-### 2. Детальная информация о конкретном кэше
+### 2. Детальная информация о системе
 
 ```bash
-GET http://localhost:9000/actuator/caches/telegramUpdateCache
+GET http://localhost:9000/api/health/detailed
 ```
 
 **Ответ:**
 ```json
 {
-  "target": "com.github.benmanes.caffeine.cache.BoundedLocalCache",
-  "name": "telegramUpdateCache",
-  "cacheManager": "cacheManager"
+  "status": "UP",
+  "timestamp": "2024-01-15T10:30:00",
+  "uptime": "2h 15m 30s",
+  "memory": {
+    "heapUsed": 1073741824,
+    "heapMax": 2147483648,
+    "nonHeapUsed": 134217728,
+    "nonHeapMax": 268435456
+  },
+  "threads": {
+    "total": 45,
+    "daemon": 42,
+    "peak": 50
+  },
+  "system": {
+    "processors": 8,
+    "totalMemory": 17179869184,
+    "freeMemory": 8589934592,
+    "maxMemory": 2147483648
+  },
+  "metrics": {
+    "jvm_memory_used": 1073741824.0,
+    "jvm_memory_max": 2147483648.0,
+    "jvm_threads_live": 45.0,
+    "process_cpu_usage": 0.15,
+    "http_server_requests_total": 1250.0,
+    "cache_size_total": 156.0
+  }
 }
 ```
 
-### 3. Метрики кэшей
-
-```bash
-GET http://localhost:9000/actuator/metrics/cache.size
-GET http://localhost:9000/actuator/metrics/cache.gets
-GET http://localhost:9000/actuator/metrics/cache.puts
-GET http://localhost:9000/actuator/metrics/cache.evictions
-```
-
-**Пример ответа для cache.size:**
-```json
-{
-  "name": "cache.size",
-  "measurements": [
-    {
-      "statistic": "VALUE",
-      "value": 15.0
-    }
-  ],
-  "availableTags": [
-    {
-      "tag": "cache",
-      "values": ["ProjectInfoCache", "gigachatSessionCache", "telegramUpdateCache", "telegramUserCache", "telegramStateCache", "procurementsListCache", "statsCache", "helpMessageCache"]
-    },
-    {
-      "tag": "cache.manager",
-      "values": ["cacheManager"]
-    }
-  ]
-}
-```
-
-### 4. Метрики конкретного кэша
-
-```bash
-GET http://localhost:9000/actuator/metrics/cache.gets?tag=cache:telegramUpdateCache
-```
-
-## Prometheus метрики
-
-### Endpoint для Prometheus
+### 3. Prometheus метрики
 
 ```bash
 GET http://localhost:9000/actuator/prometheus
 ```
 
-### Основные метрики кэшей
+## Кастомные метрики приложения
 
-| Метрика | Описание |
-|---------|----------|
-| `cache_size` | Текущий размер кэша (количество записей) |
-| `cache_gets_total` | Общее количество запросов к кэшу |
-| `cache_puts_total` | Общее количество записей в кэш |
-| `cache_evictions_total` | Количество вытесненных записей |
-| `cache_hit_ratio` | Процент попаданий в кэш |
-| `cache_miss_ratio` | Процент промахов кэша |
+### Telegram метрики
 
-### Пример Prometheus запросов
+| Метрика | Описание | Тип |
+|---------|----------|-----|
+| `telegram_update_processing_time` | Время обработки Telegram обновлений | Timer |
+| `telegram_commands` | Количество выполненных команд | Counter |
+| `telegram_duplicate_updates` | Количество дубликатов обновлений | Counter |
+
+### GigaChat метрики
+
+| Метрика | Описание | Тип |
+|---------|----------|-----|
+| `gigachat_request_time` | Время запросов к GigaChat API | Timer |
+| `gigachat_errors` | Количество ошибок GigaChat | Counter |
+
+### API метрики
+
+| Метрика | Описание | Тип |
+|---------|----------|-----|
+| `api_requests` | Количество API запросов по статусам | Counter |
+| `jwt_validation_time` | Время валидации JWT токенов | Timer |
+| `rate_limit_exceeded` | Превышения rate limit | Counter |
+
+### Кэш метрики
+
+| Метрика | Описание | Тип |
+|---------|----------|-----|
+| `cache_hits` | Количество попаданий в кэш | Counter |
+| `cache_misses` | Количество промахов кэша | Counter |
+| `cache_size` | Размер кэша | Gauge |
+
+### Новостные метрики
+
+| Метрика | Описание | Тип |
+|---------|----------|-----|
+| `news_parsing_time` | Время парсинга новостей | Timer |
+| `procurement_searches` | Количество поисков закупок | Counter |
+
+## Prometheus запросы
+
+### Telegram метрики
 
 ```promql
-# Размер всех кэшей
-cache_size
+# Среднее время обработки Telegram обновлений
+rate(telegram_update_processing_time_seconds_sum[5m]) / rate(telegram_update_processing_time_seconds_count[5m])
 
-# Hit rate для telegram кэша
-cache_gets_total{cache="telegramUpdateCache", result="hit"} / 
-cache_gets_total{cache="telegramUpdateCache"}
+# Количество команд по типам
+telegram_commands_total
 
-# Количество evictions по кэшам
-sum by (cache) (cache_evictions_total)
+# Процент дубликатов
+rate(telegram_duplicate_updates_total[5m]) / rate(telegram_commands_total[5m])
 ```
 
-## Мониторинг кэшей
+### GigaChat метрики
 
-### 1. Telegram Update Cache
+```promql
+# Среднее время ответа GigaChat
+rate(gigachat_request_time_seconds_sum[5m]) / rate(gigachat_request_time_seconds_count[5m])
 
-**Назначение:** Дедупликация обновлений Telegram
+# Ошибки GigaChat
+rate(gigachat_errors_total[5m])
+```
 
-**Ключевые метрики:**
-- `cache_size{cache="telegramUpdateCache"}` - количество обработанных updateId
-- `cache_puts_total{cache="telegramUpdateCache"}` - количество новых обновлений
-- `cache_gets_total{cache="telegramUpdateCache"}` - общее количество проверок
+### API метрики
 
-**Нормальное поведение:**
-- Size: 0-200 (ограничение по конфигурации)
-- Hit ratio: зависит от количества дубликатов (обычно низкий для новых обновлений)
-- Evictions: происходят при превышении размера или TTL (10 минут)
+```promql
+# HTTP запросы по статусам
+rate(http_server_requests_seconds_count[5m])
 
-### 2. GigaChat Session Cache
+# Время валидации JWT
+histogram_quantile(0.95, rate(jwt_validation_time_seconds_bucket[5m]))
 
-**Назначение:** Кэширование сессий GigaChat
+# Rate limit превышения
+rate(rate_limit_exceeded_total[5m])
+```
 
-**Ключевые метрики:**
-- `cache_size{cache="gigachatSessionCache"}` - количество активных сессий
-- `cache_hit_ratio{cache="gigachatSessionCache"}` - эффективность кэширования
+### Кэш метрики
 
-### 3. Telegram User Cache
+```promql
+# Hit ratio для всех кэшей
+cache_gets_total{result="hit"} / cache_gets_total
 
-**Назначение:** Кэширование пользователей Telegram
+# Размер кэшей
+cache_size
 
-**Ключевые метрики:**
-- `cache_size{cache="telegramUserCache"}` - количество активных пользователей
-- `cache_hit_ratio{cache="telegramUserCache"}` - эффективность кэширования пользователей
+# Evictions
+rate(cache_evictions_total[5m])
+```
 
-### 4. Telegram State Cache
+### Системные метрики
 
-**Назначение:** Кэширование состояний пользователей
+```promql
+# Использование памяти
+jvm_memory_used_bytes / jvm_memory_max_bytes
 
-**Ключевые метрики:**
-- `cache_size{cache="telegramStateCache"}` - количество пользователей с состояниями
-- `cache_hit_ratio{cache="telegramStateCache"}` - эффективность кэширования состояний
+# CPU использование
+process_cpu_usage
 
-### 5. Stats Cache
-
-**Назначение:** Кэширование статистики пользователей
-
-**Ключевые метрики:**
-- `cache_size{cache="statsCache"}` - количество кэшированных статистик
-- `cache_hit_ratio{cache="statsCache"}` - эффективность кэширования статистики
-
-### 6. Help Message Cache
-
-**Назначение:** Кэширование справочных сообщений
-
-**Ключевые метрики:**
-- `cache_size{cache="helpMessageCache"}` - обычно 1 запись
-- `cache_hit_ratio{cache="helpMessageCache"}` - должен быть высокий
-
-### 7. Project Info Cache
-
-**Назначение:** Кэширование информации о проекте
-
-**Ключевые метрики:**
-- `cache_size{cache="ProjectInfoCache"}` - обычно 1 запись
-- `cache_hit_ratio{cache="ProjectInfoCache"}` - должен быть высокий
+# Количество потоков
+jvm_threads_live_threads
+```
 
 ## Алерты и мониторинг
 
-### Рекомендуемые алерты
+### Критические алерты
 
-1. **Высокий miss rate**
+1. **Высокое время ответа API**
 ```promql
-cache_gets_total{result="miss"} / cache_gets_total > 0.8
+histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m])) > 2
 ```
 
-2. **Превышение размера кэша**
+2. **Высокое использование памяти**
 ```promql
-cache_size > 180  # 90% от максимума (200)
+jvm_memory_used_bytes / jvm_memory_max_bytes > 0.85
 ```
 
-3. **Частые evictions**
+3. **Много ошибок GigaChat**
 ```promql
-rate(cache_evictions_total[5m]) > 10
+rate(gigachat_errors_total[5m]) > 0.1
 ```
 
-### Grafana Dashboard
-
-Пример панелей для Grafana:
-
-1. **Cache Hit Ratio**
+4. **Превышения rate limit**
 ```promql
-cache_gets_total{result="hit"} / cache_gets_total
+rate(rate_limit_exceeded_total[5m]) > 5
 ```
 
-2. **Cache Size Over Time**
+### Предупреждающие алерты
+
+1. **Низкий hit ratio кэша**
 ```promql
-cache_size
+cache_gets_total{result="hit"} / cache_gets_total < 0.7
 ```
 
-3. **Operations Rate**
+2. **Медленные Telegram обновления**
 ```promql
-rate(cache_gets_total[1m])
-rate(cache_puts_total[1m])
+histogram_quantile(0.95, rate(telegram_update_processing_time_seconds_bucket[5m])) > 1
+```
+
+3. **Много дубликатов Telegram**
+```promql
+rate(telegram_duplicate_updates_total[5m]) / rate(telegram_commands_total[5m]) > 0.3
+```
+
+## Grafana Dashboard
+
+### Основные панели
+
+1. **Обзор системы**
+   - CPU и Memory использование
+   - Количество потоков
+   - Uptime приложения
+
+2. **API производительность**
+   - HTTP запросы по статусам
+   - Время ответа (p50, p95, p99)
+   - Rate limit превышения
+
+3. **Telegram бот**
+   - Время обработки обновлений
+   - Количество команд
+   - Дубликаты обновлений
+
+4. **GigaChat интеграция**
+   - Время ответов
+   - Количество ошибок
+   - Использование по моделям
+
+5. **Кэши**
+   - Hit ratio по кэшам
+   - Размер кэшей
+   - Evictions
+
+6. **База данных**
+   - Время запросов
+   - Количество соединений
+   - Pool статистика
+
+### Примеры запросов для панелей
+
+**Telegram Processing Time:**
+```promql
+histogram_quantile(0.95, rate(telegram_update_processing_time_seconds_bucket[5m]))
+```
+
+**Cache Hit Ratio:**
+```promql
+sum(rate(cache_gets_total{result="hit"}[5m])) by (cache) / 
+sum(rate(cache_gets_total[5m])) by (cache)
+```
+
+**API Response Time:**
+```promql
+histogram_quantile(0.95, rate(http_server_requests_seconds_bucket[5m]))
 ```
 
 ## Логирование
 
-### Включение DEBUG логов для кэша
+### Настройка логов
 
 ```properties
-logging.level.org.springframework.cache=DEBUG
-logging.level.com.github.benmanes.caffeine=DEBUG
+# Логирование метрик
+logging.level.io.micrometer=INFO
+logging.level.org.springframework.boot.actuator=INFO
+
+# Логирование кэшей
+logging.level.org.springframework.cache=INFO
+
+# Логирование производительности
+logging.level.ru.bjcreslin.naidizakupku.telegram=DEBUG
+logging.level.ru.bjcreslin.naidizakupku.gigachat=DEBUG
 ```
 
 ### Примеры логов
 
 ```
 2024-01-15 10:30:15 [http-nio-9000-exec-1] INFO  o.s.cache.interceptor.CacheInterceptor - Cache hit for key '123' in cache 'telegramUpdateCache'
-2024-01-15 10:30:16 [http-nio-9000-exec-2] INFO  o.s.cache.interceptor.CacheInterceptor - Cache miss for key '124' in cache 'telegramUpdateCache'
+2024-01-15 10:30:16 [http-nio-9000-exec-2] INFO  r.b.n.telegram.TelegramBot - Update 124 processed in 150ms
+2024-01-15 10:30:17 [http-nio-9000-exec-3] INFO  r.b.n.gigachat.GigachatService - GigaChat request completed in 2500ms using model: GigaChat:latest
 ```
 
 ## Troubleshooting
@@ -289,42 +353,52 @@ logging.level.com.github.benmanes.caffeine=DEBUG
 
 **Решение:**
 1. Проверить endpoint: `GET /actuator/health`
-2. Убедиться что `management.metrics.cache.instrument=true`
-3. Проверить что кэши используются (есть операции get/put)
+2. Убедиться что все endpoints включены в `management.endpoints.web.exposure.include`
+3. Проверить логи на ошибки Micrometer
 
-### Проблема: Низкий hit rate
+### Проблема: Высокое время ответа
 
-**Возможные причины:**
-1. TTL слишком короткий (10 минут)
-2. Размер кэша слишком мал (200 записей)
-3. Ключи кэша генерируются неправильно
+**Диагностика:**
+1. Проверить `http_server_requests_seconds`
+2. Анализировать `telegram_update_processing_time`
+3. Проверить `gigachat_request_time`
 
-### Проблема: Частые evictions
+### Проблема: Низкий hit ratio кэша
 
 **Решения:**
-1. Увеличить `maximumSize` в CacheConfiguration
-2. Увеличить `expireAfterWrite` время
-3. Проверить паттерны использования кэша
+1. Увеличить размер кэша
+2. Увеличить TTL
+3. Оптимизировать ключи кэша
+
+### Проблема: Частые rate limit превышения
+
+**Решения:**
+1. Увеличить лимиты в RateLimitingFilter
+2. Оптимизировать клиентские запросы
+3. Добавить кэширование на клиенте
 
 ## Производительность
 
-### Оптимизация кэшей
+### Оптимизация на основе метрик
 
-1. **Размер кэша:** Настроить на основе реального использования
-2. **TTL:** Баланс между свежестью данных и hit rate
-3. **Eviction policy:** Caffeine использует W-TinyLFU (оптимально)
+1. **Кэширование:** Мониторить hit ratio и увеличивать размер/время жизни при необходимости
+2. **Telegram:** Оптимизировать обработку обновлений при высоком времени
+3. **GigaChat:** Кэшировать частые запросы, использовать пул соединений
+4. **API:** Оптимизировать медленные endpoints
 
-### Мониторинг производительности
+### Мониторинг трендов
 
-```bash
-# JVM метрики
-GET /actuator/metrics/jvm.memory.used
-GET /actuator/metrics/jvm.gc.pause
-
-# Application метрики
-GET /actuator/metrics/http.server.requests
-```
+- Ежедневные отчеты по производительности
+- Алерты на аномалии
+- Автоматическое масштабирование на основе метрик
 
 ## Заключение
 
-Настроенный мониторинг кэшей обеспечивает полную видимость в работу системы кэширования. Используйте метрики для оптимизации производительности и настройки алертов для проактивного мониторинга.
+Настроенная система мониторинга обеспечивает полную видимость в производительность приложения. Используйте метрики для:
+
+- Проактивного выявления проблем
+- Оптимизации производительности
+- Планирования ресурсов
+- Анализа трендов использования
+
+Регулярно анализируйте метрики и настраивайте алерты для обеспечения стабильной работы системы.
