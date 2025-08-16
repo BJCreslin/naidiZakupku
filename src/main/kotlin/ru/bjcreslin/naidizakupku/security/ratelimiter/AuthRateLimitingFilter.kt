@@ -18,8 +18,8 @@ class AuthRateLimitingFilter : OncePerRequestFilter() {
     private val logger = LoggerFactory.getLogger(AuthRateLimitingFilter::class.java)
     
     companion object {
-        private const val MAX_REQUESTS_PER_MINUTE = 10
-        private const val WINDOW_MINUTES = 1
+        private const val MAX_REQUESTS_PER_MINUTE: Long = 10L
+        private const val WINDOW_MINUTES: Long = 1L
     }
     
     private val requestCounts = ConcurrentHashMap<String, MutableList<LocalDateTime>>()
@@ -57,7 +57,7 @@ class AuthRateLimitingFilter : OncePerRequestFilter() {
         requests.removeAll { it.isBefore(windowStart) }
         
         // Проверяем лимит
-        if (requests.size >= MAX_REQUESTS_PER_MINUTE) {
+        if (requests.size.toLong() >= MAX_REQUESTS_PER_MINUTE) {
             return false
         }
         
