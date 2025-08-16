@@ -3,7 +3,6 @@ package ru.bjcreslin.naidizakupku.security.service
 import jakarta.servlet.FilterChain
 import jakarta.servlet.http.HttpServletRequest
 import jakarta.servlet.http.HttpServletResponse
-import org.springframework.core.annotation.Order
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher
@@ -12,7 +11,6 @@ import org.springframework.web.filter.OncePerRequestFilter
 import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 
 @Component
-@Order(1)
 class JwtTokenFilter(
     private val jwtTokenProvider: JwtTokenProvider,
     private val customMetricsService: CustomMetricsService

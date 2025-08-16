@@ -63,8 +63,8 @@ class SecurityConfiguration(
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }
 
+        http.addFilterBefore(authRateLimitingFilter, UsernamePasswordAuthenticationFilter::class.java)
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
-        http.addFilterBefore(authRateLimitingFilter, JwtTokenFilter::class.java)
 
         return http.build()
     }
