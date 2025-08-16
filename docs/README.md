@@ -2,65 +2,91 @@
 
 ## Обзор
 
-Данная папка содержит документацию по проекту NaidiZakupku - Telegram бота для уведомлений о госзакупках.
+Проект представляет собой систему для работы с закупками, включающую:
+- Telegram бота для управления закупками
+- REST API для фронтенда
+- Административный интерфейс
+- Chrome расширение для добавления закупок
 
-## Структура документации
+## API Документация
 
-### Основная документация
+### Основные API
 
-- **[README.md](./README.md)** - Обзор проекта и быстрый старт
-- **[quick-start.md](./quick-start.md)** - Быстрый старт для разработчиков
-
-### Архитектура и компоненты
-
-- **[telegram-bot-architecture.md](./telegram-bot-architecture.md)** - Архитектура Telegram бота
-- **[telegram-bot-inline-buttons.md](./telegram-bot-inline-buttons.md)** - Система inline кнопок
-- **[telegram-caching.md](./telegram-caching.md)** - Кэширование часто запрашиваемых данных
-
-### Операционная документация
-
-- **[cache.md](../cache.md)** - Конфигурация и мониторинг кэшей
-- **[monitoring.md](../monitoring.md)** - Мониторинг и метрики приложения
-
-## Кэширование в Telegram боте
-
-### Обзор системы кэширования
-
-В Telegram боте реализована комплексная система кэширования для оптимизации производительности:
-
-- **Дедупликация обновлений** - предотвращение повторной обработки
-- **Кэширование пользователей** - быстрый доступ к данным пользователей
-- **Кэширование состояний** - оптимизация работы с состояниями
-- **Кэширование статистики** - ускорение формирования отчетов
-- **Кэширование справочной информации** - статические данные
-
-### Ключевые компоненты
-
-1. **CacheConfiguration** - центральная конфигурация кэшей
-2. **TelegramUpdateDeduplicationService** - дедупликация обновлений
-3. **TelegramUserServiceImpl** - кэширование пользователей
-4. **TelegramStateServiceImpl** - кэширование состояний
-5. **StatsBotService** - кэширование статистики
-6. **HelpBotService** - кэширование справочных сообщений
+1. **[API закупок для фронта](./front-api-procurements.md)** - новый API для получения списка закупок с фильтрацией, сортировкой и пагинацией
+2. **[Telegram Bot API](./telegram-bot-architecture.md)** - архитектура Telegram бота
+3. **[Inline Buttons](./telegram-bot-inline-buttons.md)** - работа с inline кнопками в Telegram
+4. **[Caching](./telegram-caching.md)** - система кэширования
 
 ### Мониторинг
 
-Все кэши интегрированы с системой мониторинга:
-- Prometheus метрики
-- Spring Actuator endpoints
-- Автоматический сбор статистики
+- **[Настройка мониторинга](./monitoring-setup.md)** - инструкции по настройке Prometheus, Grafana, AlertManager
+- **[Quick Start](./quick-start.md)** - быстрый старт проекта
+
+## Новый Front API
+
+### Эндпоинт закупок
+
+```
+GET /api/front/procurements
+```
+
+**Возможности:**
+- ✅ Фильтрация по тексту, заказчику, цене
+- ✅ Сортировка по всем полям
+- ✅ Пагинация
+- ✅ Кэширование результатов
+- ✅ JWT аутентификация
+
+**Пример использования:**
+```bash
+curl -H "Authorization: Bearer <token>" \
+  "http://localhost:8080/api/front/procurements?searchText=строительство&sortBy=price&sortDirection=DESC&page=0&size=20"
+```
+
+### Компоненты
+
+1. **ProcurementFrontController** - контроллер для обработки запросов
+2. **ProcurementFrontService** - бизнес-логика фильтрации и сортировки
+3. **ProcurementFrontDto** - DTO для фронта с дополнительными полями
+
+## Разработка
+
+### Структура проекта
+
+```
+src/main/kotlin/ru/bjcreslin/naidizakupku/
+├── front_api/                    # API для фронта
+│   ├── controller/              # Контроллеры
+│   ├── dto/                    # DTO объекты
+│   └── service/                # Сервисы
+├── procurement/                 # Модуль закупок
+├── telegram/                   # Telegram бот
+├── security/                   # Безопасность
+└── user/                       # Пользователи
+```
+
+### Технологии
+
+- **Backend:** Kotlin, Spring Boot, JPA, PostgreSQL
+- **Security:** JWT, Spring Security
+- **Caching:** Spring Cache
+- **Monitoring:** Prometheus, Grafana, AlertManager
+- **Frontend:** React TypeScript (планируется)
 
 ## Быстрый старт
 
-1. Изучите [quick-start.md](./quick-start.md) для настройки окружения
-2. Ознакомьтесь с [telegram-bot-architecture.md](./telegram-bot-architecture.md) для понимания архитектуры
-3. Изучите [telegram-caching.md](./telegram-caching.md) для работы с кэшированием
-4. Настройте мониторинг согласно [monitoring.md](../monitoring.md)
+1. Запустите базу данных и мониторинг:
+```bash
+docker-compose -f docker-compose.monitoring.yml up -d
+```
 
-## Поддержка
+2. Запустите приложение:
+```bash
+./gradlew bootRun
+```
 
-При возникновении вопросов по документации или коду, обратитесь к:
-- Архитектурной документации
-- Комментариям в коде
-- Логам приложения
-- Метрикам мониторинга
+3. API будет доступен по адресу: `http://localhost:8080`
+
+## Промт для React разработки
+
+Для создания React TypeScript таблицы закупок используйте промт: **[React Table Prompt](./react-table-prompt.md)**

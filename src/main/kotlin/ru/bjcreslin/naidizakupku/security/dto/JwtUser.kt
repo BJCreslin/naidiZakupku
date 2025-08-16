@@ -14,6 +14,10 @@ class JwtUser(
     private val authorities: MutableList<SimpleGrantedAuthority>?
 ) : UserDetails {
 
+    fun getId(): Long = id
+    
+    fun getTelegramUserId(): Long? = telegramUserId
+
     override fun getAuthorities(): MutableList<SimpleGrantedAuthority>? {
         return authorities
     }
@@ -29,4 +33,10 @@ class JwtUser(
     override fun isEnabled(): Boolean {
         return enabled
     }
+    
+    override fun isAccountNonExpired(): Boolean = true
+    
+    override fun isAccountNonLocked(): Boolean = true
+    
+    override fun isCredentialsNonExpired(): Boolean = true
 }
