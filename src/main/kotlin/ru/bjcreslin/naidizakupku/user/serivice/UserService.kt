@@ -14,6 +14,12 @@ interface UserService {
     fun findByUsername(username: String): User?
 
     /**
+     * Поиск пользователя по ID
+     */
+    @Transactional(readOnly = true)
+    fun findById(id: Long): User
+
+    /**
      * Создание пользователя
      */
     @Transactional

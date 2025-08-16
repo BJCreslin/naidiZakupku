@@ -40,6 +40,12 @@ class UserServiceImpl(
         return user
     }
 
+    override fun findById(id: Long): User {
+        return userRepository.findById(id).orElseThrow { 
+            RuntimeException("User not found with id: $id") 
+        }
+    }
+
     override fun findUserByUserDetails(jwtUser: JwtUser): User? {
         return userRepository.findByUsername(jwtUser.username)
     }

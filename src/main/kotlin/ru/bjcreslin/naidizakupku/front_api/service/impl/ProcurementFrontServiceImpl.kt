@@ -12,6 +12,7 @@ import ru.bjcreslin.naidizakupku.procurement.entity.Procurement
 import ru.bjcreslin.naidizakupku.procurement.repository.ProcurementRepository
 import ru.bjcreslin.naidizakupku.user.entity.User
 import java.math.BigDecimal
+import java.time.LocalDateTime
 import java.util.Comparator
 
 @Service
@@ -135,8 +136,8 @@ class ProcurementFrontServiceImpl(
             price = procurement.price,
             linkOnPlacement = procurement.linkOnPlacement,
             federalLawNumber = procurement.federalLawNumber,
-            createdAt = procurement.createdAt,
-            updatedAt = procurement.updatedAt
+            createdAt = procurement.createdAt ?: LocalDateTime.now(),
+            updatedAt = procurement.updatedAt ?: LocalDateTime.now()
         )
     }
 }
