@@ -12,5 +12,6 @@
     <include file="/db/changelog/2024/2025_06_06_18_34_add_telegram_section.xml"/>
     <include file="/db/changelog/2025/2025_07_04_21_51_add_gigachat_session.xml"/>
     <include file="/db/changelog/2025/2025_07_28_20_40_create_news.xml"/>
+    <include file="/db/changelog/2025/2025_01_15_10_00_create_user_sessions.xml"/>
 </databaseChangeLog>
 

@@ -16,6 +16,7 @@ import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
 import ru.bjcreslin.naidizakupku.security.service.JwtTokenFilter
+import ru.bjcreslin.naidizakupku.security.ratelimiter.AuthRateLimitingFilter
 import org.springframework.context.annotation.Lazy
 import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Component
@@ -25,7 +26,8 @@ import ru.bjcreslin.naidizakupku.cfg.JwtPropertiesConfiguration
 @Configuration
 @EnableWebSecurity
 class SecurityConfiguration(
-    @Lazy private val jwtTokenFilter: JwtTokenFilter
+    @Lazy private val jwtTokenFilter: JwtTokenFilter,
+    private val authRateLimitingFilter: AuthRateLimitingFilter
 ) {
 
     @Bean
@@ -49,6 +51,7 @@ class SecurityConfiguration(
                         "/api/v1/login/**", "/api/v1/verify-token/**",
                         "/api/admin/login/**", "/api/admin/login",
                         "/api/news/**", "/admin/common/**",
+                        "/api/auth/telegram/**",
                     ).permitAll()
                     .anyRequest().authenticated()
             }
@@ -61,6 +64,7 @@ class SecurityConfiguration(
             }
 
         http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter::class.java)
+        http.addFilterBefore(authRateLimitingFilter, JwtTokenFilter::class.java)
 
         return http.build()
     }
@@ -75,7 +79,9 @@ class SecurityConfiguration(
         val configuration = CorsConfiguration()
         configuration.allowedOrigins = listOf(
             "http://localhost:5173",
-            "https://naidizakupku.ru"
+            "http://localhost:3000",
+            "https://naidizakupku.ru",
+            "https://web.telegram.org"
         )
         configuration.allowedMethods = listOf("GET", "POST", "PUT", "DELETE", "OPTIONS")
         configuration.allowedHeaders = listOf("*")

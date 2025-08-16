@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Telegram Web App - Найди Закупку</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .auth-section {
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        
+        .btn {
+            background: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            opacity: 0.9;
+        }
+        
+        .status {
+            padding: 10px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+        
+        .status.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status.info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+        
+        .user-info {
+            background: var(--tg-theme-secondary-bg-color, #f5f5f5);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏢 Найди Закупку</h1>
+            <p>Веб-приложение для работы с государственными закупками</p>
+        </div>
+        
+        <div id="authSection" class="auth-section">
+            <h2>🔐 Авторизация</h2>
+            <p>Для доступа к функциям приложения необходимо авторизоваться через Telegram</p>
+            
+            <div id="authStatus" class="status info hidden">
+                <span id="authStatusText"></span>
+            </div>
+            
+            <button id="authButton" class="btn" onclick="authenticate()">
+                Войти через Telegram
+            </button>
+            
+            <button id="logoutButton" class="btn" onclick="logout()" style="display: none;">
+                Выйти
+            </button>
+        </div>
+        
+        <div id="userSection" class="hidden">
+            <div class="user-info">
+                <h3>👤 Информация о пользователе</h3>
+                <div id="userInfo"></div>
+            </div>
+            
+            <div class="auth-section">
+                <h3>🔧 Функции приложения</h3>
+                <button class="btn" onclick="searchProcurements()">🔍 Поиск закупок</button>
+                <button class="btn" onclick="showStats()">📊 Статистика</button>
+                <button class="btn" onclick="openChat()">💬 AI-ассистент</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let tg = window.Telegram.WebApp;
+        let isAuthenticated = false;
+        let sessionId = null;
+        let jwtToken = null;
+        
+        // Инициализация Telegram Web App
+        tg.ready();
+        tg.expand();
+        
+        // Проверяем, есть ли сохраненная сессия
+        function checkSavedSession() {
+            const savedSessionId = localStorage.getItem('session_id');
+            const savedToken = localStorage.getItem('jwt_token');
+            
+            if (savedSessionId && savedToken) {
+                validateSession(savedSessionId);
+            }
+        }
+        
+        // Авторизация через Telegram
+        function authenticate() {
+            if (!tg.initData) {
+                showStatus('Ошибка: данные Telegram не получены', 'error');
+                return;
+            }
+            
+            showStatus('Выполняется авторизация...', 'info');
+            
+            // Парсим данные от Telegram
+            const initData = parseInitData(tg.initData);
+            
+            // Отправляем на сервер для валидации
+            fetch('/api/auth/telegram/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(initData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Сохраняем токены
+                    sessionId = data.sessionId;
+                    jwtToken = data.token;
+                    localStorage.setItem('session_id', sessionId);
+                    localStorage.setItem('jwt_token', jwtToken);
+                    
+                    showStatus('Авторизация успешна!', 'success');
+                    showUserInfo(data.user);
+                    showUserSection();
+                } else {
+                    showStatus('Ошибка авторизации: ' + (data.message || 'Неизвестная ошибка'), 'error');
+                }
+            })
+            .catch(error => {
+                console.error('Auth error:', error);
+                showStatus('Ошибка сети при авторизации', 'error');
+            });
+        }
+        
+        // Парсинг initData от Telegram
+        function parseInitData(initData) {
+            const params = new URLSearchParams(initData);
+            return {
+                id: parseInt(params.get('user')?.id || '0'),
+                first_name: params.get('user')?.first_name || '',
+                last_name: params.get('user')?.last_name || '',
+                username: params.get('user')?.username || '',
+                photo_url: params.get('user')?.photo_url || '',
+                auth_date: parseInt(params.get('auth_date') || '0'),
+                hash: params.get('hash') || ''
+            };
+        }
+        
+        // Валидация сессии
+        function validateSession(sessionId) {
+            fetch(`/api/auth/telegram/session/${sessionId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.valid) {
+                    this.sessionId = sessionId;
+                    this.jwtToken = localStorage.getItem('jwt_token');
+                    showUserInfo(data.user);
+                    showUserSection();
+                    showStatus('Сессия восстановлена', 'success');
+                } else {
+                    // Очищаем невалидную сессию
+                    localStorage.removeItem('session_id');
+                    localStorage.removeItem('jwt_token');
+                    showStatus('Сессия истекла, требуется повторная авторизация', 'info');
+                }
+            })
+            .catch(error => {
+                console.error('Session validation error:', error);
+                localStorage.removeItem('session_id');
+                localStorage.removeItem('jwt_token');
+                showStatus('Ошибка проверки сессии', 'error');
+            });
+        }
+        
+        // Выход из системы
+        function logout() {
+            if (sessionId) {
+                fetch(`/api/auth/telegram/logout?sessionId=${sessionId}`, {
+                    method: 'DELETE'
+                })
+                .then(() => {
+                    // Очищаем данные
+                    localStorage.removeItem('session_id');
+                    localStorage.removeItem('jwt_token');
+                    sessionId = null;
+                    jwtToken = null;
+                    
+                    hideUserSection();
+                    showStatus('Вы успешно вышли из системы', 'info');
+                })
+                .catch(error => {
+                    console.error('Logout error:', error);
+                    showStatus('Ошибка при выходе', 'error');
+                });
+            }
+        }
+        
+        // Показать информацию о пользователе
+        function showUserInfo(user) {
+            const userInfoDiv = document.getElementById('userInfo');
+            userInfoDiv.innerHTML = `
+                <p><strong>ID:</strong> ${user.id}</p>
+                <p><strong>Имя:</strong> ${user.firstName}</p>
+                ${user.lastName ? `<p><strong>Фамилия:</strong> ${user.lastName}</p>` : ''}
+                ${user.username ? `<p><strong>Username:</strong> @${user.username}</p>` : ''}
+                ${user.photoUrl ? `<p><strong>Фото:</strong> <img src="${user.photoUrl}" width="50" height="50" style="border-radius: 50%;"></p>` : ''}
+            `;
+        }
+        
+        // Показать секцию пользователя
+        function showUserSection() {
+            document.getElementById('userSection').classList.remove('hidden');
+            document.getElementById('authButton').style.display = 'none';
+            document.getElementById('logoutButton').style.display = 'inline-block';
+        }
+        
+        // Скрыть секцию пользователя
+        function hideUserSection() {
+            document.getElementById('userSection').classList.add('hidden');
+            document.getElementById('authButton').style.display = 'inline-block';
+            document.getElementById('logoutButton').style.display = 'none';
+        }
+        
+        // Показать статус
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('authStatus');
+            const statusText = document.getElementById('authStatusText');
+            
+            statusText.textContent = message;
+            statusDiv.className = `status ${type}`;
+            statusDiv.classList.remove('hidden');
+            
+            // Скрыть статус через 5 секунд
+            setTimeout(() => {
+                statusDiv.classList.add('hidden');
+            }, 5000);
+        }
+        
+        // Функции приложения
+        function searchProcurements() {
+            tg.showAlert('Функция поиска закупок будет доступна в следующем обновлении');
+        }
+        
+        function showStats() {
+            tg.showAlert('Функция статистики будет доступна в следующем обновлении');
+        }
+        
+        function openChat() {
+            tg.showAlert('Функция AI-ассистента будет доступна в следующем обновлении');
+        }
+        
+        // Инициализация при загрузке
+        document.addEventListener('DOMContentLoaded', function() {
+            checkSavedSession();
+        });
+    </script>
+</body>
+</html>
