@@ -42,6 +42,7 @@ src/main/kotlin/ru/bjcreslin/naidizakupku/
 - [Документация по inline кнопкам](docs/telegram-bot-inline-buttons.md) - подробное описание системы кнопок
 - [Архитектура бота](docs/telegram-bot-architecture.md) - техническая документация
 - [API Reference](docs/api-reference.md) - справочник API
+- [Telegram Bot Authentication API](docs/telegram-bot-auth-api.md) - API для авторизации через Telegram бота
 - [Мониторинг производительности](monitoring.md) - система мониторинга
 - [Настройка мониторинга](docs/monitoring-setup.md) - инструкции по развертыванию
 

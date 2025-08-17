@@ -65,6 +65,10 @@ dependencies {
     implementation("org.postgresql:postgresql:${postgreSQL}")
     implementation("com.github.ben-manes.caffeine:caffeine")
     implementation("chat.giga:gigachat-java:${gigachat}")
+    
+    // QR Code generation
+    implementation("com.google.zxing:core:3.5.2")
+    implementation("com.google.zxing:javase:3.5.2")
 
     kapt("org.springframework.boot:spring-boot-configuration-processor")
     implementation("org.mapstruct:mapstruct:${mapstruct}")

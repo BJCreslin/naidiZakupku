@@ -31,7 +31,7 @@ class AuthRateLimitingFilter : OncePerRequestFilter() {
         val path = request.requestURI
         
         // Применяем rate limiting только к auth endpoints
-        if (path.startsWith("/api/auth/telegram")) {
+        if (path.startsWith("/api/auth/telegram") || path.startsWith("/api/auth/telegram-bot")) {
             val clientIp = getClientIp(request)
             
             if (!isAllowed(clientIp)) {

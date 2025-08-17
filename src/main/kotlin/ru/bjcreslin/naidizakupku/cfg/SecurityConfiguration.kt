@@ -52,6 +52,7 @@ class SecurityConfiguration(
                         "/api/admin/login/**", "/api/admin/login",
                         "/api/news/**", "/admin/common/**",
                         "/api/auth/telegram/**",
+                        "/api/auth/telegram-bot/**",
                     ).permitAll()
                     .anyRequest().authenticated()
             }

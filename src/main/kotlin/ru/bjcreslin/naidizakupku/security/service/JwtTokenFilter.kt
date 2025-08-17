@@ -24,6 +24,8 @@ class JwtTokenFilter(
         AntPathRequestMatcher("/api/chromeExtension/v1/login**"),
         AntPathRequestMatcher("/api/news/**"),
         AntPathRequestMatcher("/admin/common/**"),
+        AntPathRequestMatcher("/api/auth/telegram/**"),
+        AntPathRequestMatcher("/api/auth/telegram-bot/**"),
     )
 
     override fun doFilterInternal(
