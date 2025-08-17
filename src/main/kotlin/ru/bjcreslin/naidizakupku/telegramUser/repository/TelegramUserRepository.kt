@@ -8,4 +8,6 @@ import ru.bjcreslin.naidizakupku.telegramUser.entity.TelegramUser
 interface TelegramUserRepository : JpaRepository<TelegramUser, Long> {
 
     fun findByTelegramId(chatId: Long): TelegramUser?
+    
+    fun findByUser(user: ru.bjcreslin.naidizakupku.user.entity.User): TelegramUser?
 }

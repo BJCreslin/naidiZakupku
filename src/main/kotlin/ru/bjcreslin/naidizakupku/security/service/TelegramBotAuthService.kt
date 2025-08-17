@@ -65,8 +65,8 @@ class TelegramBotAuthService(
         val user = telegramCodeService.getUserByCode(code)
             ?: throw InvalidCodeException("Код не найден или недействителен")
         
-        // Получаем Telegram пользователя
-        val telegramUser = telegramUserRepository.findByUserId(user.id)
+        // Получаем Telegram пользователя по User
+        val telegramUser = telegramUserRepository.findByUser(user)
             ?: throw InvalidCodeException("Telegram пользователь не найден")
         
         // Создаем сессию
