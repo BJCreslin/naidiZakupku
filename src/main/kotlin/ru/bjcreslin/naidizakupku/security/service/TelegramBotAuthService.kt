@@ -2,6 +2,7 @@ package ru.bjcreslin.naidizakupku.security.service
 
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
 import ru.bjcreslin.naidizakupku.cfg.BotConfiguration
 import ru.bjcreslin.naidizakupku.security.dto.*
 import ru.bjcreslin.naidizakupku.security.exceptions.InvalidCodeException
@@ -58,6 +59,7 @@ class TelegramBotAuthService(
         }
     }
     
+    @Transactional
     fun authenticateWithCode(code: Int): AuthResult {
         logger.info("Authenticating with code: $code")
         
