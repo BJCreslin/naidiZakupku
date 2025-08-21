@@ -1,6 +1,7 @@
 package ru.bjcreslin.naidizakupku.healthCheck
 
 import io.micrometer.core.instrument.MeterRegistry
+import jakarta.persistence.EntityManagerFactory
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.ApplicationContext
 import org.springframework.http.ResponseEntity
@@ -9,10 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
 import ru.bjcreslin.naidizakupku.cfg.CustomMetricsService
 import java.lang.management.ManagementFactory
-import java.lang.management.MemoryMXBean
-import java.lang.management.ThreadMXBean
 import java.time.LocalDateTime
-import jakarta.persistence.EntityManagerFactory
 
 @RestController
 @RequestMapping("/api/health")

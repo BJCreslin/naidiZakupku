@@ -1,13 +1,13 @@
 package ru.bjcreslin.naidizakupku.chromeExtension.controller
 
 import jakarta.validation.Valid
-import jakarta.ws.rs.BadRequestException
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import ru.bjcreslin.naidizakupku.chromeExtension.dto.NumberCodeRequestDto
 import ru.bjcreslin.naidizakupku.chromeExtension.service.LoginService
 import ru.bjcreslin.naidizakupku.security.service.JwtTokenProvider
+import ru.bjcreslin.naidizakupku.common.error.ErrorCodeException
 
 @RestController
 @RequestMapping("api/v1")
@@ -28,7 +28,7 @@ class LoginController(
     ): ResponseEntity<String> {
         return try {
             ResponseEntity.ok().body(loginService.login(codeRequest))
-        } catch (e: BadRequestException) {
+        } catch (e: ErrorCodeException) {
             ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.message)
         } catch (e: Exception) {
             ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Login failed")

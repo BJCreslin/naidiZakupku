@@ -1,7 +1,5 @@
 package ru.bjcreslin.naidizakupku.chromeExtension.dto
 
-import jakarta.validation.constraints.Max
-import jakarta.validation.constraints.Min
 import jakarta.validation.constraints.Pattern
 
 data class NumberCodeRequestDto(
