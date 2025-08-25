@@ -23,11 +23,11 @@ class BotInitializer(
     @EventListener(ContextRefreshedEvent::class)
     @Throws(TelegramApiException::class)
     fun init() {
-        // Проверяем наличие токена и имени бота
-        val token = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: botConfiguration.token
-        val name = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME") ?: botConfiguration.name
+        // Проверяем конфигурацию бота через сам бот
+        val token = telegramBot.botToken
+        val name = telegramBot.botUsername
 
-        logger.info("Telegram bot configuration: Token: $token, Name: $name")
+        logger.info("Telegram bot configuration: Token: ${if (token.isNotBlank()) "SET" else "MISSING"}, Name: $name")
         
         if (token.isBlank() || name.isBlank()) {
             logger.warn("Telegram bot configuration is incomplete. Token: ${if (token.isBlank()) "MISSING" else "SET"}, Name: ${if (name.isBlank()) "MISSING" else "SET"}")

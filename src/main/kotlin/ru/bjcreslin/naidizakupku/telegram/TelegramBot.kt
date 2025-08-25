@@ -34,6 +34,14 @@ class TelegramBot(
         return username
     }
 
+    override fun getBotToken(): String {
+        val token = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: botConfiguration.token
+        if (token.isBlank()) {
+            logger.warn("Telegram bot token is not configured")
+        }
+        return token
+    }
+
     override fun onUpdateReceived(update: Update) {
         val startTime = System.currentTimeMillis()
         val updateId = update.updateId
