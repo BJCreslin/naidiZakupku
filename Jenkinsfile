@@ -7,6 +7,7 @@ pipeline {
         IMAGE_NAME = "myapp"
         CONTAINER_NAME = "myapp-container"
         NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN = credentials('NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN')
+        NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME = credentials('NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME')
         GIGACHAT_AUTH_ID = credentials('GIGACHAT_AUTH_ID')
         GIGACHAT_AUTH_CLIENT_SECRET = credentials('GIGACHAT_AUTH_CLIENT_SECRET')
     }
@@ -93,6 +94,7 @@ pipeline {
                            docker run -d --name ${CONTAINER_NAME} \\
                                -v /var/h2data:/data \\
                                -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="${NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN}" \\
+                               -e NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME="${NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME}" \\
                                -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
                                -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
                                --network monitoring-network \\
