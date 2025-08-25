@@ -8,6 +8,7 @@ pipeline {
         CONTAINER_NAME = "myapp-container"
         NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN = credentials('NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN')
         NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME = credentials('NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME')
+        NAIDI_ZAKUPKU_ADDRESS_DB = credentials('NAIDI_ZAKUPKU_ADDRESS_DB')
         GIGACHAT_AUTH_ID = credentials('GIGACHAT_AUTH_ID')
         GIGACHAT_AUTH_CLIENT_SECRET = credentials('GIGACHAT_AUTH_CLIENT_SECRET')
     }
@@ -95,6 +96,7 @@ pipeline {
                                -v /var/h2data:/data \\
                                -e NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN="${NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN}" \\
                                -e NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME="${NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME}" \\
+                               -e NAIDI_ZAKUPKU_ADDRESS_DB="${NAIDI_ZAKUPKU_ADDRESS_DB}" \\
                                -e GIGACHAT_AUTH_ID="${GIGACHAT_AUTH_ID}" \\
                                -e GIGACHAT_AUTH_CLIENT_SECRET="${GIGACHAT_AUTH_CLIENT_SECRET}" \\
                                --network monitoring-network \\
