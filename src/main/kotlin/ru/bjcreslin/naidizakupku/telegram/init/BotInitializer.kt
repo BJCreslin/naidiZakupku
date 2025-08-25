@@ -26,6 +26,8 @@ class BotInitializer(
         // Проверяем наличие токена и имени бота
         val token = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: botConfiguration.token
         val name = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME") ?: botConfiguration.name
+
+        logger.info("Telegram bot configuration: Token: $token, Name: $name")
         
         if (token.isBlank() || name.isBlank()) {
             logger.warn("Telegram bot configuration is incomplete. Token: ${if (token.isBlank()) "MISSING" else "SET"}, Name: ${if (name.isBlank()) "MISSING" else "SET"}")
