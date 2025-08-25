@@ -13,7 +13,7 @@ import ru.bjcreslin.naidizakupku.chromeExtension.service.ChromeExtensionService
 import ru.bjcreslin.naidizakupku.security.dto.JwtUser
 
 @RestController
-@RequestMapping("api/chromeExtension/v1")
+@RequestMapping("api")
 class ChromeExtensionController(private val chromeExtensionService: ChromeExtensionService) {
 
     @PostMapping(*arrayOf("procurement"))

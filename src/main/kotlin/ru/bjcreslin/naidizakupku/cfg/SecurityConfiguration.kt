@@ -45,7 +45,7 @@ class SecurityConfiguration(
                 auth
                     .requestMatchers(
                         "/api/health", "/api/health/**",
-                        "/api/v1/login/**", "/api/v1/verify-token/**",
+                        "/api/login/**", "/api/verify-token/**",
                         "/api/admin/login/**", "/api/admin/login",
                         "/api/news/**", "/admin/common/**",
                         "/api/auth/telegram/**",

@@ -18,8 +18,8 @@ class JwtTokenFilter(
     private val publicPathMatchers = listOf(
         AntPathRequestMatcher("/api/health"),
         AntPathRequestMatcher("/api/health/**"),
-        AntPathRequestMatcher("/api/v1/login/**"),
-        AntPathRequestMatcher("/api/v1//verify-token/**"),
+        AntPathRequestMatcher("/api/login/**"),
+        AntPathRequestMatcher("/api/verify-token/**"),
         AntPathRequestMatcher("/api/chromeExtension/v1/login**"),
         AntPathRequestMatcher("/api/news/**"),
         AntPathRequestMatcher("/admin/common/**"),

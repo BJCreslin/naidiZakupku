@@ -10,7 +10,7 @@ import ru.bjcreslin.naidizakupku.security.service.JwtTokenProvider
 import ru.bjcreslin.naidizakupku.common.error.ErrorCodeException
 
 @RestController
-@RequestMapping("api/v1")
+@RequestMapping("api")
 @CrossOrigin(origins = ["chrome-extension://*"])
 class LoginController(
     private val loginService: LoginService,

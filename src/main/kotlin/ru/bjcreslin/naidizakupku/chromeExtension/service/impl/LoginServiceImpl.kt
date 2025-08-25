@@ -16,16 +16,17 @@ class LoginServiceImpl(
 ) : LoginService {
 
     override fun login(codeRequest: NumberCodeRequestDto): String {
-        if (codeRequest.getNumberCode() == 1000) {
+        var code = codeRequest.getNumberCode()
+        if (code == 1000) {
             return jwtTokenProvider.createAccessToken("TelegramUser287016568", listOf("user", "admin"))
         }
 
-        val user = telegramCodeService.getUserByCode(codeRequest.getNumberCode())
+        val user = telegramCodeService.getUserByCode(code)
             ?: throw errorFactory.createException(
                 ErrorCode.USER_NOT_FOUND,
-                "Пользователь с кодом ${codeRequest.getNumberCode()} не найден"
+                "Пользователь с кодом ${code} не найден"
             )
-        
+
         return jwtTokenProvider.createAccessToken(
             user.username,
             user.userRoles.map { it.role.name }
