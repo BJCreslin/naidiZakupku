@@ -2,6 +2,7 @@ package ru.bjcreslin.naidizakupku.cfg
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Lazy
 import org.springframework.security.authentication.AuthenticationManager
 import org.springframework.security.config.Customizer
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration
@@ -15,12 +16,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.web.cors.CorsConfiguration
 import org.springframework.web.cors.CorsConfigurationSource
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource
-import ru.bjcreslin.naidizakupku.security.service.JwtTokenFilter
 import ru.bjcreslin.naidizakupku.security.ratelimiter.AuthRateLimitingFilter
-import org.springframework.context.annotation.Lazy
-import org.springframework.security.core.userdetails.UserDetailsService
-import org.springframework.stereotype.Component
-import ru.bjcreslin.naidizakupku.cfg.JwtPropertiesConfiguration
+import ru.bjcreslin.naidizakupku.security.service.JwtTokenFilter
 
 
 @Configuration
@@ -59,7 +56,6 @@ class SecurityConfiguration(
 
             .httpBasic(Customizer.withDefaults())
 
-            // ✅ Stateless для всех, кроме H2 (она исключена через webSecurityCustomizer)
             .sessionManagement {
                 it.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             }

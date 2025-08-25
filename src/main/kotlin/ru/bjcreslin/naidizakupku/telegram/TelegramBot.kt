@@ -26,14 +26,6 @@ class TelegramBot(
 
     private val logger = LoggerFactory.getLogger(TelegramBot::class.java)
 
-    override fun getBotToken(): String {
-        val token = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_TOKEN") ?: botConfiguration.token
-        if (token.isBlank()) {
-            logger.warn("Telegram bot token is not configured")
-        }
-        return token
-    }
-
     override fun getBotUsername(): String {
         val username = System.getenv("NAIDI_ZAKUPKU_TELEGRAM_BOT_NAME") ?: botConfiguration.name
         if (username.isBlank()) {
